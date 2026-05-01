@@ -10,6 +10,10 @@ export async function checkBudgetAlerts(transaction: Transaction) {
   if (transaction.type !== 'expense') return;
 
   try {
+    if (!db) {
+      console.warn("Firestore 'db' is not initialized. Skipping budget check.");
+      return;
+    }
     // 1. Fetch budget envelope for the user and category
     const budgetRef = collection(db, 'budgets');
     const q = query(
