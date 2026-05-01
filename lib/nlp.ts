@@ -37,13 +37,13 @@ export async function parseTransactionWithNLP(text: string, userId: string): Pro
   }
 
   return {
-    addedByUserId: userId,
+    added_by_user_id: userId,
     amount,
     category,
     type,
     description: text,
     date: Date.now(),
     source: 'whatsapp',
-    rawMessage: text
+    raw_message: text
   };
 }

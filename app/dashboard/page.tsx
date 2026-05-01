@@ -22,7 +22,7 @@ import { InvestmentTracker } from '@/components/ui/InvestmentTracker';
 
 export default function DashboardPage() {
   const [mounted, setMounted] = React.useState(false);
-  const [activeLedgerId, setActiveLedgerId] = useState('ledger_123');
+  const [active_ledger_id, setActiveLedgerId] = useState('ledger_123');
   const [activeView, setActiveView] = useState<'dashboard' | 'transactions' | 'savings' | 'budget' | 'adhd' | 'subscriptions' | 'settings' | 'goals' | 'recurring' | 'wallets' | 'investment' | 'reports' | 'categories' | 'backup'>('dashboard');
   const [detailView, setDetailView] = useState<{ type: 'goal' | 'transaction' | 'investment', id: string } | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -112,7 +112,7 @@ export default function DashboardPage() {
 
       {isSidebarVisible && (
         <Sidebar 
-          activeLedgerId={activeLedgerId} 
+          active_ledger_id={active_ledger_id} 
           onSelectLedger={setActiveLedgerId} 
           ledgers={ledgers}
           onCreateLedger={handleCreateLedger}
@@ -141,7 +141,8 @@ export default function DashboardPage() {
             )
           ) : activeView === 'dashboard' ? (
             <HomeDashboard
-              ledgerName={ledgers.find(l => l.id === activeLedgerId)?.name || 'Financial Ledger'}
+              ledgerName={ledgers.find(l => l.id === active_ledger_id)?.name || 'Financial Ledger'}
+              ledger_id={active_ledger_id}
               onAddTransaction={() => setIsAddModalOpen(true)}
               onSelectTransaction={(id) => setDetailView({ type: 'transaction', id })}
               onSelectGoal={(id) => setDetailView({ type: 'goal', id })}

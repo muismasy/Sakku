@@ -4,6 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Transaction } from '@/types';
 import { InputField, Card } from '@/components/ui';
 import * as Icons from '../ui/Icons';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AddTransactionFormProps {
   onSuccess: () => void;
@@ -83,13 +85,33 @@ export function AddTransactionForm({ onSuccess, onCancel }: AddTransactionFormPr
     { name: 'Other', icon: <Icons.SparklesIcon />, color: '#576574' },
   ];
 
+  const { user } = useAuth();
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!amount) return;
+    if (!amount || !category || !user) return;
     
-    // Logic for saving...
-    console.log('Saving transaction:', { amount, category, description, date, type });
-    onSuccess();
+    try {
+      const { error } = await supabase
+        .from('transactions')
+        .insert([{
+          amount: parseFloat(amount),
+          category,
+          description,
+          type,
+          date: new Date(date).getTime(),
+          ledger_id: 'ledger_123', // Hardcoded for now as per dashboard
+          added_by_user_id: user.uid,
+          source: 'web'
+        }]);
+
+      if (error) throw error;
+      
+      console.log('✅ Transaction saved successfully');
+      onSuccess();
+    } catch (err: any) {
+      console.error('❌ Error saving transaction:', err.message);
+      alert('Failed to save transaction: ' + err.message);
+    }
   };
 
   return (

@@ -49,11 +49,11 @@ export async function POST(request: Request) {
               // 1. Parse text with NLP
               const transactionData = await parseTransactionWithNLP(text, mockUserId);
               
-              // Map old userId to new ledgerId structure
+              // Map old userId to new ledger_id structure
               const newTransaction: Partial<Transaction> = {
                 ...transactionData,
-                ledgerId: mockLedgerId,
-                addedByUserId: mockUserId
+                ledger_id: mockLedgerId,
+                added_by_user_id: mockUserId
               };
               
               // 2. Save to Firestore

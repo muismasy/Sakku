@@ -18,7 +18,7 @@ export async function checkBudgetAlerts(transaction: Transaction) {
     const budgetRef = collection(db, 'budgets');
     const q = query(
       budgetRef, 
-      where('ledgerId', '==', transaction.ledgerId),
+      where('ledger_id', '==', transaction.ledger_id),
       where('category', '==', transaction.category)
     );
     
@@ -33,23 +33,23 @@ export async function checkBudgetAlerts(transaction: Transaction) {
     const envelope = envelopeDoc.data() as BudgetEnvelope;
     
     // In a real app we'd aggregate current month's transactions.
-    // For now we assume envelope.currentSpent is updated or we just add this transaction's amount.
-    const newSpent = envelope.currentSpent + transaction.amount;
-    const percentage = newSpent / envelope.monthlyLimit;
+    // For now we assume envelope.current_spent is updated or we just add this transaction's amount.
+    const newSpent = envelope.current_spent + transaction.amount;
+    const percentage = newSpent / envelope.monthly_limit;
 
-    console.log(`Budget for ${transaction.category}: Spent ${newSpent} / ${envelope.monthlyLimit} (${Math.round(percentage * 100)}%)`);
+    console.log(`Budget for ${transaction.category}: Spent ${newSpent} / ${envelope.monthly_limit} (${Math.round(percentage * 100)}%)`);
 
-    let updates: Partial<BudgetEnvelope> = { currentSpent: newSpent };
+    let updates: Partial<BudgetEnvelope> = { current_spent: newSpent };
     let shouldAlert = false;
     let alertMessage = '';
 
-    if (percentage >= 1 && !envelope.alertSent100) {
-      alertMessage = `🚨 Alert: You have exceeded 100% of your budget for ${transaction.category}! (Spent: ${newSpent}/${envelope.monthlyLimit})`;
-      updates.alertSent100 = true;
+    if (percentage >= 1 && !envelope.alert_sent_100) {
+      alertMessage = `🚨 Alert: You have exceeded 100% of your budget for ${transaction.category}! (Spent: ${newSpent}/${envelope.monthly_limit})`;
+      updates.alert_sent_100 = true;
       shouldAlert = true;
-    } else if (percentage >= 0.8 && percentage < 1 && !envelope.alertSent80) {
-      alertMessage = `⚠️ Warning: You have reached 80% of your budget for ${transaction.category}. (Spent: ${newSpent}/${envelope.monthlyLimit})`;
-      updates.alertSent80 = true;
+    } else if (percentage >= 0.8 && percentage < 1 && !envelope.alert_sent_80) {
+      alertMessage = `⚠️ Warning: You have reached 80% of your budget for ${transaction.category}. (Spent: ${newSpent}/${envelope.monthly_limit})`;
+      updates.alert_sent_80 = true;
       shouldAlert = true;
     }
 
@@ -58,7 +58,7 @@ export async function checkBudgetAlerts(transaction: Transaction) {
 
     // 3. Send WhatsApp Alert if needed
     if (shouldAlert) {
-      await sendWhatsAppAlert(transaction.addedByUserId, alertMessage);
+      await sendWhatsAppAlert(transaction.added_by_user_id, alertMessage);
     }
   } catch (error) {
     console.error("Error checking budget alerts: ", error);

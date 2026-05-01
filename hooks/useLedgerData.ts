@@ -5,7 +5,7 @@ import { Transaction } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 
-export function useLedgerData(ledgerId: string = 'ledger_123') {
+export function useLedgerData(ledger_id: string = 'ledger_123') {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export function useLedgerData(ledgerId: string = 'ledger_123') {
     if (!user) return;
 
     const fetchTransactions = async () => {
-      console.log("🚀 Starting fetch for ledger:", ledgerId);
+      console.log("🚀 Starting fetch for ledger:", ledger_id);
       setLoading(true);
       setError(null);
 
@@ -28,7 +28,7 @@ export function useLedgerData(ledgerId: string = 'ledger_123') {
         const fetchPromise = supabase
           .from('transactions')
           .select('*')
-          .eq('ledgerId', ledgerId)
+          .eq('ledger_id', ledger_id)
           .order('date', { ascending: false });
 
         // Race between the fetch and the timeout
@@ -62,7 +62,7 @@ export function useLedgerData(ledgerId: string = 'ledger_123') {
           event: '*',
           schema: 'public',
           table: 'transactions',
-          filter: `ledgerId=eq.${ledgerId}`,
+          filter: `ledger_id=eq.${ledger_id}`,
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
@@ -79,7 +79,7 @@ export function useLedgerData(ledgerId: string = 'ledger_123') {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [ledgerId, user]);
+  }, [ledger_id, user]);
 
-  return { transactions, loading, error, ledgerId };
+  return { transactions, loading, error, ledger_id };
 }
