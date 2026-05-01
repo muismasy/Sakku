@@ -11,36 +11,36 @@ export function RecurringExpensesView() {
   const [expenses, setExpenses] = useState<RecurringExpense[]>([
     {
       id: '1',
-      ledgerId: 'l1',
+      ledger_id: 'l1',
       title: 'KPR Rumah (Mandiri)',
-      monthlyAmount: 3500000,
-      totalMonths: 180,
-      remainingMonths: 142,
-      startDate: Date.now() - (38 * 30 * 24 * 60 * 60 * 1000),
+      monthly_amount: 3500000,
+      total_months: 180,
+      remaining_months: 142,
+      start_date: Date.now() - (38 * 30 * 24 * 60 * 60 * 1000),
       status: 'active',
-      nextBillingDate: Date.now() + (5 * 24 * 60 * 60 * 1000)
+      next_billing_date: Date.now() + (5 * 24 * 60 * 60 * 1000)
     },
     {
       id: '2',
-      ledgerId: 'l1',
+      ledger_id: 'l1',
       title: 'Cicilan Motor (Honda)',
-      monthlyAmount: 850000,
-      totalMonths: 36,
-      remainingMonths: 12,
-      startDate: Date.now() - (24 * 30 * 24 * 60 * 60 * 1000),
+      monthly_amount: 850000,
+      total_months: 36,
+      remaining_months: 12,
+      start_date: Date.now() - (24 * 30 * 24 * 60 * 60 * 1000),
       status: 'active',
-      nextBillingDate: Date.now() + (12 * 24 * 60 * 60 * 1000)
+      next_billing_date: Date.now() + (12 * 24 * 60 * 60 * 1000)
     },
     {
       id: '3',
-      ledgerId: 'l1',
+      ledger_id: 'l1',
       title: 'Macbook Installment',
-      monthlyAmount: 1200000,
-      totalMonths: 12,
-      remainingMonths: 3,
-      startDate: Date.now() - (9 * 30 * 24 * 60 * 60 * 1000),
+      monthly_amount: 1200000,
+      total_months: 12,
+      remaining_months: 3,
+      start_date: Date.now() - (9 * 30 * 24 * 60 * 60 * 1000),
       status: 'paused',
-      nextBillingDate: Date.now() + (20 * 24 * 60 * 60 * 1000)
+      next_billing_date: Date.now() + (20 * 24 * 60 * 60 * 1000)
     }
   ]);
 
@@ -51,7 +51,7 @@ export function RecurringExpensesView() {
 
   const totalMonthly = expenses
     .filter(e => e.status === 'active')
-    .reduce((sum, e) => sum + e.monthlyAmount, 0);
+    .reduce((sum, e) => sum + e.monthly_amount, 0);
 
   const handleToggleStatus = (id: string) => {
     setExpenses(prev => prev.map(e => {
@@ -145,4 +145,3 @@ export function RecurringExpensesView() {
     </div>
   );
 }
-

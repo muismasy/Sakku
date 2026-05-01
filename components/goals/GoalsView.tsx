@@ -7,9 +7,9 @@ import { SakuPot } from '@/types';
 
 export function GoalsView() {
   const [goals, setGoals] = useState<SakuPot[]>([
-    { id: '1', ledgerId: 'l1', name: 'Beli Motor', targetAmount: 25000000, currentAmount: 8500000, streakDays: 12 },
-    { id: '2', ledgerId: 'l1', name: 'Liburan Bali', targetAmount: 10000000, currentAmount: 4500000, streakDays: 5 },
-    { id: '3', ledgerId: 'l1', name: 'Dana Darurat', targetAmount: 50000000, currentAmount: 12000000, streakDays: 30 },
+    { id: '1', ledger_id: 'l1', name: 'Beli Motor', target_amount: 25000000, current_amount: 8500000, streak_days: 12 },
+    { id: '2', ledger_id: 'l1', name: 'Liburan Bali', target_amount: 10000000, current_amount: 4500000, streak_days: 5 },
+    { id: '3', ledger_id: 'l1', name: 'Dana Darurat', target_amount: 50000000, current_amount: 12000000, streak_days: 30 },
   ]);
 
   const handleAddGoal = () => {
@@ -19,11 +19,11 @@ export function GoalsView() {
     if (name && target) {
       const newGoal: SakuPot = {
         id: Date.now().toString(),
-        ledgerId: 'l1',
+        ledger_id: 'l1',
         name,
-        targetAmount: parseInt(target, 10),
-        currentAmount: 0,
-        streakDays: 0
+        target_amount: parseInt(target, 10),
+        current_amount: 0,
+        streak_days: 0
       };
       setGoals([...goals, newGoal]);
     }
@@ -76,8 +76,8 @@ export function GoalsView() {
             >
               <GoalCard 
                 title={goal.name}
-                currentAmount={goal.currentAmount}
-                targetAmount={goal.targetAmount}
+                current_amount={goal.current_amount}
+                target_amount={goal.target_amount}
                 onClick={() => alert(`Opening details for ${goal.name}`)}
               />
             </div>

@@ -100,7 +100,7 @@ export function AddTransactionForm({ onSuccess, onCancel }: AddTransactionFormPr
           type,
           date: new Date(date).getTime(),
           ledger_id: 'ledger_123', // Hardcoded for now as per dashboard
-          added_by_user_id: user.uid,
+          added_by_user_id: user.id,
           source: 'web'
         }]);
 

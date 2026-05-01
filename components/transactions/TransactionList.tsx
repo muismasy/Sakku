@@ -46,7 +46,7 @@ export function TransactionList({ isModalOpen, setIsModalOpen }: { isModalOpen: 
           type: newType,
           date: Date.now(),
           ledger_id: ledger_id,
-          added_by_user_id: user.uid,
+          added_by_user_id: user.id,
           source: 'web'
         }]);
 
