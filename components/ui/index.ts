@@ -7,3 +7,4 @@ export { BottomSheet } from './BottomSheet';
 export { FAB } from './FAB';
 export { Tabs } from './Tabs';
 export { ChartContainer } from './ChartContainer';
+export { Skeleton } from './Skeleton';

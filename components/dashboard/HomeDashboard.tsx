@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { useLedgerData } from '@/hooks/useLedgerData';
-import { ProgressBar, Card, ListItem } from '@/components/ui';
+import { ProgressBar, Card, ListItem, Skeleton } from '@/components/ui';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Filler } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 
@@ -25,7 +25,7 @@ interface HomeDashboardProps {
 
 export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransaction, onSelectGoal }: HomeDashboardProps) {
   const [mounted, setMounted] = React.useState(false);
-  const { transactions } = useLedgerData();
+  const { transactions, loading } = useLedgerData();
 
   React.useEffect(() => { setMounted(true); }, []);
 
@@ -60,7 +60,9 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
     return 'Good evening';
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted || loading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-section)' }}>
@@ -295,6 +297,50 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
 
       {/* Spacer for BottomNav */}
       <div style={{ height: '100px' }} />
+    </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-section)' }}>
+      {/* Header Skeleton */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div>
+          <Skeleton width={120} height={14} style={{ marginBottom: '8px' }} />
+          <Skeleton width={200} height={36} />
+        </div>
+        <Skeleton width={100} height={40} borderRadius="10px" />
+      </div>
+
+      {/* Hero Card Skeleton */}
+      <Skeleton height={200} borderRadius="24px" />
+
+      {/* Preview Grid Skeleton */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-section)' }}>
+        <Skeleton height={180} borderRadius="20px" />
+        <Skeleton height={180} borderRadius="20px" />
+      </div>
+
+      {/* Recent Activity Skeleton */}
+      <section>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <Skeleton width={150} height={20} />
+          <Skeleton width={80} height={16} />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', backgroundColor: 'var(--border-color)', borderRadius: '16px', overflow: 'hidden' }}>
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} style={{ padding: '16px', backgroundColor: 'var(--surface-color)', display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <Skeleton width={40} height={40} borderRadius="12px" />
+              <div style={{ flex: 1 }}>
+                <Skeleton width="60%" height={14} style={{ marginBottom: '8px' }} />
+                <Skeleton width="40%" height={10} />
+              </div>
+              <Skeleton width={80} height={16} />
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
