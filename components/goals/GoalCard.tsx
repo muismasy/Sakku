@@ -5,13 +5,13 @@ import { ProgressBar, Card } from '@/components/ui';
 
 interface GoalCardProps {
   title: string;
-  current_amount: number;
-  target_amount: number;
+  currentAmount: number;
+  targetAmount: number;
   onClick?: () => void;
 }
 
-export function GoalCard({ title, current_amount, target_amount, onClick }: GoalCardProps) {
-  const percentage = Math.min(Math.round((current_amount / target_amount) * 100), 100);
+export function GoalCard({ title, currentAmount, targetAmount, onClick }: GoalCardProps) {
+  const percentage = Math.min(Math.round((currentAmount / targetAmount) * 100), 100);
   
   const formatCurrency = (amount: number) => {
     return `Rp ${amount.toLocaleString('id-ID')}`;
@@ -49,7 +49,7 @@ export function GoalCard({ title, current_amount, target_amount, onClick }: Goal
       </div>
       
       <div style={{ margin: '2px 0' }}>
-        <ProgressBar value={current_amount} max={target_amount} color="var(--primary-color)" height={8} />
+        <ProgressBar value={currentAmount} max={targetAmount} color="var(--primary-color)" height={8} />
       </div>
       
       <div style={{ 
@@ -60,12 +60,12 @@ export function GoalCard({ title, current_amount, target_amount, onClick }: Goal
         fontWeight: 600
       }}>
         <span>
-          <span style={{ color: 'var(--text-main)' }}>{formatCurrency(current_amount)}</span>
+          <span style={{ color: 'var(--text-main)' }}>{formatCurrency(currentAmount)}</span>
           <span style={{ opacity: 0.4, margin: '0 6px' }}>/</span>
-          <span style={{ opacity: 0.7 }}>{formatCurrency(target_amount)}</span>
+          <span style={{ opacity: 0.7 }}>{formatCurrency(targetAmount)}</span>
         </span>
         <span style={{ color: 'var(--primary-color)', opacity: 0.8 }}>
-          {formatCurrency(target_amount - current_amount)} left
+          {formatCurrency(targetAmount - currentAmount)} left
         </span>
       </div>
     </Card>

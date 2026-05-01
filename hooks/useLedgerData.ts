@@ -3,51 +3,50 @@
 import { useState, useEffect } from 'react';
 import { Transaction } from '@/types';
 import { supabase } from '@/lib/supabase';
-import { useAuth } from './useAuth';
 
-export function useLedgerData(ledger_id: string = 'ledger_123') {
-  const { user } = useAuth();
+// Map snake_case DB row to camelCase Transaction type
+function mapRow(row: any): Transaction {
+  return {
+    id: row.id,
+    ledgerId: row.ledger_id,
+    addedByUserId: row.added_by_user_id,
+    amount: Number(row.amount),
+    type: row.type,
+    category: row.category,
+    description: row.description,
+    date: Number(row.date),
+    source: row.source,
+    rawMessage: row.raw_message,
+  };
+}
+
+export function useLedgerData(ledgerId: string = 'ledger_123') {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
-
     const fetchTransactions = async () => {
-      console.log("🚀 Starting fetch for ledger:", ledger_id);
+      console.log("Fetching transactions for ledger:", ledgerId);
       setLoading(true);
-      setError(null);
-
-      // Create a timeout promise
-      const timeout = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("Database request timed out")), 10000)
-      );
-
       try {
-        const fetchPromise = supabase
+        const { data, error } = await supabase
           .from('transactions')
           .select('*')
-          .eq('ledger_id', ledger_id)
+          .eq('ledger_id', ledgerId)
           .order('date', { ascending: false });
 
-        // Race between the fetch and the timeout
-        const result: any = await Promise.race([fetchPromise, timeout]);
-        const { data, error } = result;
-
         if (error) {
-          console.error("❌ Supabase Error:", error);
+          console.error("Supabase Error:", error);
           setError(error.message);
         } else {
-          console.log("✅ Data received:", data?.length || 0, "rows");
-          setTransactions(data || []);
+          setTransactions((data || []).map(mapRow));
         }
       } catch (err: any) {
-        console.error("⚠️ Connection issue:", err.message);
+        console.error("Critical Connection Error:", err);
         setError(err.message || "Failed to connect to database");
       } finally {
         setLoading(false);
-        console.log("🏁 Loading finished");
       }
     };
 
@@ -62,13 +61,13 @@ export function useLedgerData(ledger_id: string = 'ledger_123') {
           event: '*',
           schema: 'public',
           table: 'transactions',
-          filter: `ledger_id=eq.${ledger_id}`,
+          filter: `ledger_id=eq.${ledgerId}`,
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setTransactions(prev => [payload.new as Transaction, ...prev]);
+            setTransactions(prev => [mapRow(payload.new), ...prev]);
           } else if (payload.eventType === 'UPDATE') {
-            setTransactions(prev => prev.map(tx => tx.id === payload.new.id ? payload.new as Transaction : tx));
+            setTransactions(prev => prev.map(tx => tx.id === payload.new.id ? mapRow(payload.new) : tx));
           } else if (payload.eventType === 'DELETE') {
             setTransactions(prev => prev.filter(tx => tx.id !== payload.old.id));
           }
@@ -79,7 +78,9 @@ export function useLedgerData(ledger_id: string = 'ledger_123') {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [ledger_id, user]);
+  }, [ledgerId]);
 
-  return { transactions, loading, error, ledger_id };
+  return { transactions, loading, error, ledgerId };
 }
+
+

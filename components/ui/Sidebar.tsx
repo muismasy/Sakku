@@ -23,7 +23,7 @@ interface Ledger {
 }
 
 interface SidebarProps {
-  active_ledger_id: string;
+  activeLedgerId: string;
   onSelectLedger: (id: string) => void;
   ledgers: Ledger[];
   onCreateLedger: () => void;
@@ -33,7 +33,7 @@ interface SidebarProps {
   userName: string;
 }
 
-export function Sidebar({ active_ledger_id, onSelectLedger, ledgers, onCreateLedger, onViewChange, activeView, onHide, userName }: SidebarProps) {
+export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedger, onViewChange, activeView, onHide, userName }: SidebarProps) {
 
   const handleNavClick = (view: SidebarProps['onViewChange'] extends (v: infer V) => void ? V : never) => {
     onViewChange(view);
@@ -113,7 +113,7 @@ export function Sidebar({ active_ledger_id, onSelectLedger, ledgers, onCreateLed
             {ledgers.map(ledger => (
               <SidebarButton 
                 key={ledger.id}
-                active={active_ledger_id === ledger.id}
+                active={activeLedgerId === ledger.id}
                 icon={Icons.Book}
                 label={ledger.id === 'ledger_123' ? 'Family Budget' : ledger.name}
                 onClick={() => { onSelectLedger(ledger.id); if (typeof window !== 'undefined' && window.innerWidth <= 768) onHide(); }}

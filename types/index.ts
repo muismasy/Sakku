@@ -1,68 +1,68 @@
 export interface User {
   id: string; // Firebase Auth UID
-  phone_number: string; // Linked WA number for matching incoming webhooks
-  default_ledger_id?: string; // The primary ledger they interact with
-  created_at: number; // Timestamp
+  phoneNumber: string; // Linked WA number for matching incoming webhooks
+  defaultLedgerId?: string; // The primary ledger they interact with
+  createdAt: number; // Timestamp
 }
 
 export interface Ledger {
   id: string;
   name: string; // e.g., "Family Budget"
-  owner_id: string;
-  shared_with: string[]; // Array of User IDs (or phone numbers) that have access
-  created_at: number;
+  ownerId: string;
+  sharedWith: string[]; // Array of User IDs (or phone numbers) that have access
+  createdAt: number;
 }
 
 export interface Transaction {
   id: string;
-  ledger_id: string;
-  added_by_user_id: string;
+  ledgerId: string;
+  addedByUserId: string;
   amount: number;
   type: 'expense' | 'income' | 'transfer';
   category: string; // e.g., 'Food', 'Transport'
   description: string;
   date: number; // Timestamp
   source: 'whatsapp' | 'web';
-  raw_message?: string; // The original WA message
+  rawMessage?: string; // The original WA message
 }
 
 export interface BudgetEnvelope {
   id: string;
-  ledger_id: string;
+  ledgerId: string;
   category: string;
-  monthly_limit: number;
-  current_spent: number;
-  alert_sent_80: boolean;
-  alert_sent_100: boolean;
+  monthlyLimit: number;
+  currentSpent: number;
+  alertSent80: boolean;
+  alertSent100: boolean;
 }
 
 export interface SakuPot {
   id: string;
-  ledger_id: string;
+  ledgerId: string;
   name: string; // e.g., 'Emergency Fund', 'Holiday'
-  target_amount: number;
-  current_amount: number;
+  targetAmount: number;
+  currentAmount: number;
   deadline?: number; // Timestamp
-  streak_days: number;
+  streakDays: number;
 }
 
 export interface RecurringExpense {
   id: string;
-  ledger_id: string;
+  ledgerId: string;
   title: string;
-  monthly_amount: number;
-  total_months: number;
-  remaining_months: number;
-  start_date: number; // Timestamp
+  monthlyAmount: number;
+  totalMonths: number;
+  remainingMonths: number;
+  startDate: number; // Timestamp
   status: 'active' | 'completed' | 'paused';
-  next_billing_date: number; // Timestamp
+  nextBillingDate: number; // Timestamp
 }
 
 export interface GrowthBudget {
   id: string;
   title: string;
-  budget_amount: number;
-  current_spent: number;
+  budgetAmount: number;
+  currentSpent: number;
   category: 'health' | 'education' | 'skills' | 'other';
 }
 
@@ -74,5 +74,5 @@ export interface Wallet {
   currency: string;
   color?: string;
   icon?: string;
-  last_updated: number;
+  lastUpdated: number;
 }

@@ -3,13 +3,12 @@
 import React, { useState } from 'react';
 import { Transaction } from '@/types';
 import { useLedgerData } from '@/hooks/useLedgerData';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/hooks/useAuth';
+import { db } from '@/lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 import * as Icons from '../ui/Icons';
 
 export function TransactionList({ isModalOpen, setIsModalOpen }: { isModalOpen: boolean, setIsModalOpen: (open: boolean) => void }) {
-  const { transactions, loading, ledger_id } = useLedgerData();
-  const { user } = useAuth();
+  const { transactions, loading, ledgerId } = useLedgerData();
   const [filter, setFilter] = useState<'all' | 'expense' | 'income'>('all');
   const [search, setSearch] = useState('');
   
@@ -28,39 +27,58 @@ export function TransactionList({ isModalOpen, setIsModalOpen }: { isModalOpen: 
     if (!file) return;
 
     setIsAiLoading(true);
-    // AI Parsing Logic...
-    setIsAiLoading(false);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/ai/parse-receipt', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.amount) {
+        setNewAmount(data.amount.toString());
+        setNewCategory(data.category || 'Shopping');
+        setNewDescription(data.description || 'Receipt Scan');
+      }
+    } catch (err) {
+      console.error('AI Parsing failed:', err);
+      alert('AI parsing failed. Please enter manually.');
+    } finally {
+      setIsAiLoading(false);
+    }
   };
 
   const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newAmount || !newCategory || !newDescription || !user) return;
+    if (!newAmount || !newCategory || !newDescription) return;
+
+    const newTx: Partial<Transaction> = {
+      ledgerId: ledgerId,
+      addedByUserId: 'current_user_123',
+      amount: parseInt(newAmount, 10),
+      category: newCategory,
+      description: newDescription,
+      date: Date.now(),
+      type: newType,
+      source: 'web'
+    };
 
     try {
-      const { error } = await supabase
-        .from('transactions')
-        .insert([{
-          amount: parseFloat(newAmount),
-          category: newCategory,
-          description: newDescription,
-          type: newType,
-          date: Date.now(),
-          ledger_id: ledger_id,
-          added_by_user_id: user.id,
-          source: 'web'
-        }]);
-
-      if (error) throw error;
-      
-      setIsModalOpen(false);
-      setNewAmount('');
-      setNewCategory('');
-      setNewDescription('');
-      setNewType('expense');
-    } catch (err: any) {
-      console.error('Error adding transaction:', err.message);
-      alert('Failed to add transaction: ' + err.message);
+      if (db) {
+        await addDoc(collection(db, 'transactions'), newTx);
+      } else {
+        console.warn("Firestore 'db' is not initialized. Transaction was not saved.");
+      }
+    } catch (e) {
+      console.warn("Mock DB add error:", e);
     }
+
+    setIsModalOpen(false);
+    setNewAmount('');
+    setNewCategory('');
+    setNewDescription('');
+    setNewType('expense');
   };
 
   return (
@@ -150,6 +168,28 @@ export function TransactionList({ isModalOpen, setIsModalOpen }: { isModalOpen: 
               <button onClick={() => setIsModalOpen(false)} style={{ fontSize: '1.5rem', opacity: 0.5 }}>&times;</button>
             </div>
             
+            <div style={{ marginBottom: '1.5rem', padding: '1.25rem', border: '2px dashed var(--border-color)', borderRadius: '16px', textAlign: 'center', backgroundColor: 'var(--bg-color)' }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}><Icons.RobotIcon /></div>
+              <p style={{ fontSize: '0.875rem', marginBottom: '0.75rem', fontWeight: 600 }}>
+                {isAiLoading ? 'Reading receipt...' : 'AI Receipt Scanner'}
+              </p>
+              <input 
+                type="file" 
+                accept="image/*" 
+                capture="environment" 
+                onChange={handleAiReceipt} 
+                id="receipt-upload" 
+                style={{ display: 'none' }}
+              />
+              <label 
+                htmlFor="receipt-upload" 
+                className="btn-primary" 
+                style={{ cursor: 'pointer', padding: '0.5rem 1rem', display: 'inline-block', opacity: isAiLoading ? 0.5 : 1, fontSize: '0.875rem' }}
+              >
+                {isAiLoading ? 'Processing...' : 'Upload Receipt'}
+              </label>
+            </div>
+
             <form onSubmit={handleAddTransaction} className="flex flex-col gap-4">
               <div>
                 <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Type</label>

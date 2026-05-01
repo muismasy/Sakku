@@ -14,10 +14,10 @@ export function WalletsView() {
   const [editingWalletId, setEditingWalletId] = useState<string | null>(null);
   
   const [wallets, setWallets] = useState<Wallet[]>([
-    { id: '1', name: 'Bank BCA', type: 'bank', balance: 24500000, currency: 'IDR', color: '#0066AE', last_updated: Date.now() },
-    { id: '2', name: 'GoPay', type: 'e-wallet', balance: 1250000, currency: 'IDR', color: '#00AED6', last_updated: Date.now() },
-    { id: '3', name: 'Physical Cash', type: 'cash', balance: 450000, currency: 'IDR', color: '#10B981', last_updated: Date.now() },
-    { id: '4', name: 'Bank Mandiri', type: 'bank', balance: 8900000, currency: 'IDR', color: '#F9C11C', last_updated: Date.now() }
+    { id: '1', name: 'Bank BCA', type: 'bank', balance: 24500000, currency: 'IDR', color: '#0066AE', lastUpdated: Date.now() },
+    { id: '2', name: 'GoPay', type: 'e-wallet', balance: 1250000, currency: 'IDR', color: '#00AED6', lastUpdated: Date.now() },
+    { id: '3', name: 'Physical Cash', type: 'cash', balance: 450000, currency: 'IDR', color: '#10B981', lastUpdated: Date.now() },
+    { id: '4', name: 'Bank Mandiri', type: 'bank', balance: 8900000, currency: 'IDR', color: '#F9C11C', lastUpdated: Date.now() }
   ]);
 
   // New Wallet form state
@@ -44,7 +44,7 @@ export function WalletsView() {
       balance: parseInt(newBalance, 10),
       currency: 'IDR',
       color: newColor,
-      last_updated: Date.now()
+      lastUpdated: Date.now()
     };
     setWallets([...wallets, newWallet]);
     setNewName(''); setNewBalance(''); setShowAddWallet(false);

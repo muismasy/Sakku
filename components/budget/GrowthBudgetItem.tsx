@@ -16,8 +16,8 @@ interface GrowthBudgetItemProps {
 export function GrowthBudgetItem({ item, onClick, isEditing, onUpdate, onDelete }: GrowthBudgetItemProps) {
   const [isInlineEditing, setIsInlineEditing] = useState(false);
 
-  const percentage = item.budget_amount > 0 
-    ? Math.min(Math.round((item.current_spent / item.budget_amount) * 100), 100) 
+  const percentage = item.budgetAmount > 0 
+    ? Math.min(Math.round((item.currentSpent / item.budgetAmount) * 100), 100) 
     : 0;
 
   const formatCurrency = (amount: number) => {
@@ -50,8 +50,8 @@ export function GrowthBudgetItem({ item, onClick, isEditing, onUpdate, onDelete 
               <label style={labelStyle}>Spent (Rp)</label>
               <input 
                 type="number" 
-                value={item.current_spent} 
-                onChange={(e) => onUpdate?.({ current_spent: parseInt(e.target.value, 10) || 0 })} 
+                value={item.currentSpent} 
+                onChange={(e) => onUpdate?.({ currentSpent: parseInt(e.target.value, 10) || 0 })} 
                 style={inputStyle} 
               />
             </div>
@@ -59,8 +59,8 @@ export function GrowthBudgetItem({ item, onClick, isEditing, onUpdate, onDelete 
               <label style={labelStyle}>Budget (Rp)</label>
               <input 
                 type="number" 
-                value={item.budget_amount} 
-                onChange={(e) => onUpdate?.({ budget_amount: parseInt(e.target.value, 10) || 0 })} 
+                value={item.budgetAmount} 
+                onChange={(e) => onUpdate?.({ budgetAmount: parseInt(e.target.value, 10) || 0 })} 
                 style={inputStyle} 
               />
             </div>
@@ -124,7 +124,7 @@ export function GrowthBudgetItem({ item, onClick, isEditing, onUpdate, onDelete 
           </div>
 
           <div style={{ margin: '2px 0' }}>
-            <ProgressBar value={item.current_spent} max={item.budget_amount} color={growthColor} height={8} />
+            <ProgressBar value={item.currentSpent} max={item.budgetAmount} color={growthColor} height={8} />
           </div>
 
           <div style={{
@@ -135,9 +135,9 @@ export function GrowthBudgetItem({ item, onClick, isEditing, onUpdate, onDelete 
             fontWeight: 600
           }}>
             <span>
-              <span style={{ color: 'var(--text-main)' }}>{formatCurrency(item.current_spent)}</span>
+              <span style={{ color: 'var(--text-main)' }}>{formatCurrency(item.currentSpent)}</span>
               <span style={{ opacity: 0.4, margin: '0 6px' }}>of</span>
-              <span style={{ opacity: 0.7 }}>{formatCurrency(item.budget_amount)}</span>
+              <span style={{ opacity: 0.7 }}>{formatCurrency(item.budgetAmount)}</span>
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: growthColor }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: growthColor }} />

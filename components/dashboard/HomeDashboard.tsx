@@ -18,15 +18,14 @@ function formatRp(n: number) {
 // ─── Main Component ──────────────────────────────────────
 interface HomeDashboardProps {
   ledgerName: string;
-  ledger_id: string;
   onAddTransaction: () => void;
   onSelectTransaction: (id: string) => void;
   onSelectGoal: (id: string) => void;
 }
 
-export function HomeDashboard({ ledgerName, ledger_id, onAddTransaction, onSelectTransaction, onSelectGoal }: HomeDashboardProps) {
+export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransaction, onSelectGoal }: HomeDashboardProps) {
   const [mounted, setMounted] = React.useState(false);
-  const { transactions, loading, error } = useLedgerData(ledger_id);
+  const { transactions, loading, error } = useLedgerData();
 
   React.useEffect(() => { setMounted(true); }, []);
 

@@ -11,8 +11,8 @@ interface RecurringExpenseCardProps {
 }
 
 export function RecurringExpenseCard({ expense, onToggleStatus, onClick }: RecurringExpenseCardProps) {
-  const monthsPassed = expense.total_months - expense.remaining_months;
-  const timePercentage = (monthsPassed / expense.total_months) * 100;
+  const monthsPassed = expense.totalMonths - expense.remainingMonths;
+  const timePercentage = (monthsPassed / expense.totalMonths) * 100;
   
   const formatCurrency = (amount: number) => {
     return `Rp ${amount.toLocaleString('id-ID')}`;
@@ -50,7 +50,7 @@ export function RecurringExpenseCard({ expense, onToggleStatus, onClick }: Recur
             {expense.title}
           </h3>
           <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-            {formatCurrency(expense.monthly_amount)} / month
+            {formatCurrency(expense.monthlyAmount)} / month
           </span>
         </div>
         
@@ -79,13 +79,13 @@ export function RecurringExpenseCard({ expense, onToggleStatus, onClick }: Recur
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-            {expense.remaining_months} months remaining
+            {expense.remainingMonths} months remaining
           </span>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-main)', fontWeight: 700 }}>
-            {monthsPassed} / {expense.total_months}
+            {monthsPassed} / {expense.totalMonths}
           </span>
         </div>
-        <ProgressBar value={monthsPassed} max={expense.total_months} color="#2383E2" height={8} />
+        <ProgressBar value={monthsPassed} max={expense.totalMonths} color="#2383E2" height={8} />
       </div>
 
       <div style={{ 
@@ -99,7 +99,7 @@ export function RecurringExpenseCard({ expense, onToggleStatus, onClick }: Recur
         color: 'var(--text-muted)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span>Next billing: <b>{new Date(expense.next_billing_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</b></span>
+          <span>Next billing: <b>{new Date(expense.nextBillingDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</b></span>
         </div>
         {expense.status === 'active' && (
           <div style={{ 
@@ -118,3 +118,4 @@ export function RecurringExpenseCard({ expense, onToggleStatus, onClick }: Recur
     </Card>
   );
 }
+

@@ -1,7 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import React, { useState } from 'react';
 import { Sidebar } from '@/components/ui/Sidebar';
 import { ADHDCalendar } from '@/components/ui/ADHDCalendar';
@@ -24,7 +22,7 @@ import { InvestmentTracker } from '@/components/ui/InvestmentTracker';
 
 export default function DashboardPage() {
   const [mounted, setMounted] = React.useState(false);
-  const [active_ledger_id, setActiveLedgerId] = useState('ledger_123');
+  const [activeLedgerId, setActiveLedgerId] = useState('ledger_123');
   const [activeView, setActiveView] = useState<'dashboard' | 'transactions' | 'savings' | 'budget' | 'adhd' | 'subscriptions' | 'settings' | 'goals' | 'recurring' | 'wallets' | 'investment' | 'reports' | 'categories' | 'backup'>('dashboard');
   const [detailView, setDetailView] = useState<{ type: 'goal' | 'transaction' | 'investment', id: string } | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -114,7 +112,7 @@ export default function DashboardPage() {
 
       {isSidebarVisible && (
         <Sidebar 
-          active_ledger_id={active_ledger_id} 
+          activeLedgerId={activeLedgerId} 
           onSelectLedger={setActiveLedgerId} 
           ledgers={ledgers}
           onCreateLedger={handleCreateLedger}
@@ -143,8 +141,7 @@ export default function DashboardPage() {
             )
           ) : activeView === 'dashboard' ? (
             <HomeDashboard
-              ledgerName={ledgers.find(l => l.id === active_ledger_id)?.name || 'Financial Ledger'}
-              ledger_id={active_ledger_id}
+              ledgerName={ledgers.find(l => l.id === activeLedgerId)?.name || 'Financial Ledger'}
               onAddTransaction={() => setIsAddModalOpen(true)}
               onSelectTransaction={(id) => setDetailView({ type: 'transaction', id })}
               onSelectGoal={(id) => setDetailView({ type: 'goal', id })}

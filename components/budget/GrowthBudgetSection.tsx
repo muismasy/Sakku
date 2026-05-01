@@ -8,9 +8,9 @@ import { Card } from '@/components/ui';
 
 export function GrowthBudgetSection() {
   const [budgets, setBudgets] = useState<GrowthBudget[]>([
-    { id: '1', title: 'Gym Membership', budget_amount: 650000, current_spent: 650000, category: 'health' },
-    { id: '2', title: 'Language Course', budget_amount: 1200000, current_spent: 450000, category: 'education' },
-    { id: '3', title: 'Coding Books', budget_amount: 500000, current_spent: 125000, category: 'skills' },
+    { id: '1', title: 'Gym Membership', budgetAmount: 650000, currentSpent: 650000, category: 'health' },
+    { id: '2', title: 'Language Course', budgetAmount: 1200000, currentSpent: 450000, category: 'education' },
+    { id: '3', title: 'Coding Books', budgetAmount: 500000, currentSpent: 125000, category: 'skills' },
   ]);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -18,8 +18,8 @@ export function GrowthBudgetSection() {
   const [newTitle, setNewTitle] = useState('');
   const [newAmount, setNewAmount] = useState('');
 
-  const totalSpent = budgets.reduce((sum, b) => sum + b.current_spent, 0);
-  const totalBudget = budgets.reduce((sum, b) => sum + b.budget_amount, 0);
+  const totalSpent = budgets.reduce((sum, b) => sum + b.currentSpent, 0);
+  const totalBudget = budgets.reduce((sum, b) => sum + b.budgetAmount, 0);
   
   const monthlyIncome = 15000000; 
   const growthPercentage = monthlyIncome > 0 ? ((totalSpent / monthlyIncome) * 100).toFixed(1) : '0';
@@ -30,8 +30,8 @@ export function GrowthBudgetSection() {
     setBudgets([...budgets, {
       id: `gb_${Date.now()}`,
       title: newTitle,
-      budget_amount: parseInt(newAmount, 10),
-      current_spent: 0,
+      budgetAmount: parseInt(newAmount, 10),
+      currentSpent: 0,
       category: 'other'
     }]);
     setNewTitle(''); setNewAmount(''); setShowAdd(false);
