@@ -58,13 +58,16 @@ export async function POST(request: Request) {
               
               // 2. Save to Firestore
               try {
-                const transactionsRef = collection(db, 'transactions');
-                const docRef = await addDoc(transactionsRef, newTransaction);
-                console.log("Transaction saved with ID: ", docRef.id);
-                
-                // 3. Trigger budget alerts check (Phase 3 logic)
-                await checkBudgetAlerts(newTransaction as Transaction);
-                
+                if (!db) {
+                  console.warn("Firestore 'db' is not initialized. Skipping save.");
+                } else {
+                  const transactionsRef = collection(db, 'transactions');
+                  const docRef = await addDoc(transactionsRef, newTransaction);
+                  console.log("Transaction saved with ID: ", docRef.id);
+                  
+                  // 3. Trigger budget alerts check (Phase 3 logic)
+                  await checkBudgetAlerts(newTransaction as Transaction);
+                }
               } catch (e) {
                 console.error("Error adding document to Firestore (expected if using mock config): ", e);
               }
