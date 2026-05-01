@@ -109,6 +109,34 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
           </div>
           
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <div style={{ padding: '0 0.5rem', marginBottom: '1.5rem' }}>
+              <button 
+                onClick={onViewChange.bind(null, 'dashboard')}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--primary-color)',
+                  color: 'white',
+                  border: 'none',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)'
+                }}
+                onClickCapture={(e) => {
+                  const addBtn = document.querySelector('[aria-label="Add transaction"]') as HTMLButtonElement;
+                  if (addBtn) addBtn.click();
+                  else alert("Please go to Dashboard to add transactions");
+                }}
+              >
+                <span style={{ fontSize: '1.2rem' }}>+</span> Quick Add
+              </button>
+            </div>
+
             <SectionLabel label="Workspaces" />
             {ledgers.map(ledger => (
               <SidebarButton 

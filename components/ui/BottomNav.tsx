@@ -45,21 +45,33 @@ const PieChartIcon = () => (
 
 export function BottomNav({ activeView, onViewChange, onAddClick }: BottomNavProps) {
   return (
-    <nav style={{
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: '75px', // Slightly taller for better touch
-      backgroundColor: 'var(--surface-color)',
-      borderTop: '1px solid var(--border-color)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-around',
-      padding: '0 8px',
-      zIndex: 1000,
-      boxShadow: '0 -4px 12px rgba(0,0,0,0.03)'
-    }} className="show-on-mobile-flex">
+    <nav 
+      className="bottom-nav"
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '80px',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(20px)',
+        borderTop: '1px solid var(--border-color)',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        padding: '0 1rem',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        zIndex: 100,
+        boxShadow: '0 -4px 12px rgba(0,0,0,0.03)'
+      }}
+    >
+      <style jsx>{`
+        @media (min-width: 769px) {
+          .bottom-nav {
+            display: none !important;
+          }
+        }
+      `}</style>
       <NavButton 
         active={activeView === 'dashboard'} 
         icon={<HomeIcon />} 

@@ -20,15 +20,25 @@ function mapRow(row: any): Transaction {
   };
 }
 
+const DEMO_DATA: Transaction[] = [
+  { id: '1', ledgerId: 'demo', addedByUserId: 'me', amount: 12500000, type: 'income', category: 'Salary', description: 'Gaji Utama Mei', date: Date.now() - 86400000 * 2, source: 'web' },
+  { id: '2', ledgerId: 'demo', addedByUserId: 'me', amount: 45000, type: 'expense', category: 'Food', description: 'Nasi Goreng Kambing', date: Date.now() - 3600000 * 3, source: 'whatsapp' },
+  { id: '3', ledgerId: 'demo', addedByUserId: 'me', amount: 150000, type: 'expense', category: 'Transport', description: 'Isi Bensin Shell', date: Date.now() - 3600000 * 5, source: 'web' },
+  { id: '4', ledgerId: 'demo', addedByUserId: 'me', amount: 890000, type: 'expense', category: 'Shopping', description: 'Sepatu Lari Baru', date: Date.now() - 86400000 * 1, source: 'web' },
+  { id: '5', ledgerId: 'demo', addedByUserId: 'me', amount: 2500000, type: 'income', category: 'Salary', description: 'Bonus Project Freelance', date: Date.now() - 86400000 * 3, source: 'web' },
+  { id: '6', ledgerId: 'demo', addedByUserId: 'me', amount: 35000, type: 'expense', category: 'Food', description: 'Kopi Kenangan', date: Date.now() - 1800000, source: 'whatsapp' },
+  { id: '7', ledgerId: 'demo', addedByUserId: 'me', amount: 125000, type: 'expense', category: 'Bill', description: 'Tagihan Listrik', date: Date.now() - 86400000 * 4, source: 'web' },
+  { id: '8', ledgerId: 'demo', addedByUserId: 'me', amount: 500000, type: 'expense', category: 'Health', description: 'Checkup Dokter Gigi', date: Date.now() - 86400000 * 5, source: 'web' },
+];
+
 export function useLedgerData(ledgerId: string = '00000000-0000-0000-0000-000000000123') {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [transactions, setTransactions] = useState<Transaction[]>(DEMO_DATA);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // In Demo Mode, we still try to fetch but fall back to DEMO_DATA
     const fetchTransactions = async () => {
-      console.log("Fetching transactions for ledger:", ledgerId);
-      setLoading(true);
       try {
         const { data, error } = await supabase
           .from('transactions')
@@ -36,51 +46,19 @@ export function useLedgerData(ledgerId: string = '00000000-0000-0000-0000-000000
           .eq('ledger_id', ledgerId)
           .order('date', { ascending: false });
 
-        if (error) {
-          console.error("Supabase Error:", error);
-          setError(error.message);
-        } else {
-          setTransactions((data || []).map(mapRow));
+        if (!error && data && data.length > 0) {
+          setTransactions(data.map(mapRow));
         }
       } catch (err: any) {
-        console.error("Critical Connection Error:", err);
-        setError(err.message || "Failed to connect to database");
-      } finally {
-        setLoading(false);
+        console.warn("DB offline, sticking to Demo Mode");
       }
     };
 
     fetchTransactions();
-
-    // Setup real-time subscription
-    const channel = supabase
-      .channel('schema-db-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'transactions',
-          filter: `ledger_id=eq.${ledgerId}`,
-        },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            setTransactions(prev => [mapRow(payload.new), ...prev]);
-          } else if (payload.eventType === 'UPDATE') {
-            setTransactions(prev => prev.map(tx => tx.id === payload.new.id ? mapRow(payload.new) : tx));
-          } else if (payload.eventType === 'DELETE') {
-            setTransactions(prev => prev.filter(tx => tx.id !== payload.old.id));
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [ledgerId]);
 
   return { transactions, loading, error, ledgerId };
 }
+
 
 
