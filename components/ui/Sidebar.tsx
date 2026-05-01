@@ -108,7 +108,7 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
                 e.currentTarget.style.color = 'var(--text-muted)';
               }}
             >
-              <Icons.XIcon />
+              {Icons.XIcon}
             </button>
           </div>
 
