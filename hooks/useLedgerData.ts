@@ -15,20 +15,27 @@ export function useLedgerData(ledgerId: string = 'ledger_123') {
     if (!user) return;
 
     const fetchTransactions = async () => {
+      console.log("Fetching transactions for ledger:", ledgerId);
       setLoading(true);
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('ledgerId', ledgerId)
-        .order('date', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('transactions')
+          .select('*')
+          .eq('ledgerId', ledgerId)
+          .order('date', { ascending: false });
 
-      if (error) {
-        console.error("Supabase Error:", error);
-        setError(error.message);
-      } else {
-        setTransactions(data || []);
+        if (error) {
+          console.error("Supabase Error:", error);
+          setError(error.message);
+        } else {
+          setTransactions(data || []);
+        }
+      } catch (err: any) {
+        console.error("Critical Connection Error:", err);
+        setError(err.message || "Failed to connect to database");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchTransactions();

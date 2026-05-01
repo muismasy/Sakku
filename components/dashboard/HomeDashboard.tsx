@@ -25,7 +25,7 @@ interface HomeDashboardProps {
 
 export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransaction, onSelectGoal }: HomeDashboardProps) {
   const [mounted, setMounted] = React.useState(false);
-  const { transactions, loading } = useLedgerData();
+  const { transactions, loading, error } = useLedgerData();
 
   React.useEffect(() => { setMounted(true); }, []);
 
@@ -59,6 +59,21 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
     if (h < 17) return 'Good afternoon';
     return 'Good evening';
   }, []);
+
+  if (error) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <p style={{ color: 'var(--danger-color)', fontWeight: 600 }}>Database Connection Failed</p>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          style={{ marginTop: '16px', padding: '8px 16px', backgroundColor: 'var(--primary-color)', color: 'white', borderRadius: '8px', border: 'none' }}
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   if (!mounted || loading) {
     return <DashboardSkeleton />;
