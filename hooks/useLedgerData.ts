@@ -9,18 +9,18 @@ function mapRow(row: any): Transaction {
   return {
     id: row.id,
     ledgerId: row.ledger_id,
-    addedByUserId: row.added_by_user_id,
+    addedByUserId: row.user_id,
     amount: Number(row.amount),
     type: row.type,
     category: row.category,
     description: row.description,
     date: Number(row.date),
-    source: row.source,
-    rawMessage: row.raw_message,
+    source: row.source || 'web',
+    rawMessage: row.raw_message || '',
   };
 }
 
-export function useLedgerData(ledgerId: string = 'ledger_123') {
+export function useLedgerData(ledgerId: string = '00000000-0000-0000-0000-000000000123') {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -22,13 +22,13 @@ import { InvestmentTracker } from '@/components/ui/InvestmentTracker';
 
 export default function DashboardPage() {
   const [mounted, setMounted] = React.useState(false);
-  const [activeLedgerId, setActiveLedgerId] = useState('ledger_123');
+  const [activeLedgerId, setActiveLedgerId] = useState('00000000-0000-0000-0000-000000000123');
   const [activeView, setActiveView] = useState<'dashboard' | 'transactions' | 'savings' | 'budget' | 'adhd' | 'subscriptions' | 'settings' | 'goals' | 'recurring' | 'wallets' | 'investment' | 'reports' | 'categories' | 'backup'>('dashboard');
   const [detailView, setDetailView] = useState<{ type: 'goal' | 'transaction' | 'investment', id: string } | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [ledgers, setLedgers] = useState([
-    { id: 'ledger_123', name: 'Family Budget' },
+    { id: '00000000-0000-0000-0000-000000000123', name: 'Family Budget' },
     { id: 'ledger_personal', name: 'Personal Cash' },
     { id: 'ledger_business', name: 'Startup Business' }
   ]);
