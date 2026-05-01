@@ -124,13 +124,24 @@ export default function DashboardPage() {
       )}
 
       <main style={{ 
-        marginLeft: 0,
+        marginLeft: isSidebarVisible ? 'var(--sidebar-width, 260px)' : 0,
         transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         paddingTop: '65px',
         minHeight: '100vh',
         width: '100%'
       }}>
-        <div className="container" style={{ paddingBottom: '2rem' }}>
+        <style jsx>{`
+          @media (max-width: 768px) {
+            main {
+              margin-left: 0 !important;
+            }
+          }
+        `}</style>
+        <div className="container" style={{ 
+          maxWidth: '1200px', 
+          margin: '0 auto',
+          paddingBottom: '2rem' 
+        }}>
           {detailView ? (
             detailView.type === 'goal' ? (
               <GoalDetail goalId={detailView.id} onBack={() => setDetailView(null)} />

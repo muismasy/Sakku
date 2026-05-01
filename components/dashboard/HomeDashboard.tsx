@@ -53,6 +53,28 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
 
   const recentTx = useMemo(() => [...transactions].sort((a, b) => b.date - a.date).slice(0, 5), [transactions]);
 
+  // Dynamic Budget Calculation
+  const budgetData = useMemo(() => {
+    const limits: Record<string, { total: number, color: string }> = {
+      'Food': { total: 3000000, color: '#FF9F43' },
+      'Transport': { total: 1000000, color: '#54A0FF' },
+      'Shopping': { total: 2000000, color: '#EE5253' },
+      'Bill': { total: 1500000, color: '#10AC84' },
+    };
+
+    const spent: Record<string, number> = {};
+    transactions.filter(t => t.type === 'expense').forEach(tx => {
+      spent[tx.category] = (spent[tx.category] || 0) + tx.amount;
+    });
+
+    return Object.keys(limits).map(cat => ({
+      label: cat,
+      current: spent[cat] || 0,
+      total: limits[cat].total,
+      color: limits[cat].color
+    }));
+  }, [transactions]);
+
   const greeting = useMemo(() => {
     const h = new Date().getHours();
     if (h < 12) return 'Good morning';
@@ -153,30 +175,86 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
         </div>
       </Card>
 
+      {/* Category Budgets Section - NEW & DYNAMIC */}
+      <section>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', padding: '0 4px' }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.01em', margin: 0 }}>Category Budgets</h2>
+          <button style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--primary-color)', border: 'none', background: 'none' }}>Adjust Limits</button>
+        </div>
+        <Card style={{ padding: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+            {budgetData.map((budget) => (
+              <div key={budget.label}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-main)' }}>{budget.label}</span>
+                  <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                    {formatRp(budget.current)} / <span style={{ fontWeight: 800, color: 'var(--text-main)' }}>{formatRp(budget.total)}</span>
+                  </span>
+                </div>
+                <ProgressBar 
+                  value={budget.current} 
+                  max={budget.total} 
+                  color={budget.current > budget.total ? 'var(--danger-color)' : budget.color} 
+                  height={10} 
+                />
+              </div>
+            ))}
+          </div>
+        </Card>
+      </section>
+
 
 
       {/* Previews Row: Fixed Expenses & Goals */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-section)' }}>
-        {/* Fixed Expenses Preview */}
+        {/* Fixed Expenses Preview - OPTIMIZED */}
         <Card>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>Fixed Expenses</h3>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-color)', backgroundColor: 'var(--surface-secondary)', padding: '4px 8px', borderRadius: '6px' }}>Upcoming</span>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>Monthly Bills</h3>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-color)', backgroundColor: 'rgba(79, 70, 229, 0.08)', padding: '4px 8px', borderRadius: '6px' }}>
+              2 Unpaid
+            </span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {[
-              { id: '1', title: 'Home Rent', amount: 3500000, date: 'May 5', icon: '🏠' },
-              { id: '2', title: 'Motor Installment', amount: 850000, date: 'May 12', icon: '🏍️' }
+              { id: '1', title: 'Home Rent', amount: 3500000, dueDate: 'May 5', icon: '🏠', status: 'unpaid' },
+              { id: '2', title: 'Motor Installment', amount: 850000, dueDate: 'May 12', icon: '🏍️', status: 'unpaid' },
+              { id: '3', title: 'Spotify Family', amount: 89000, dueDate: 'May 1', icon: '🎵', status: 'paid' }
             ].map((exp) => (
-              <div key={exp.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', backgroundColor: 'var(--surface-secondary)', borderRadius: '12px' }}>
+              <div key={exp.id} style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                padding: '12px', 
+                backgroundColor: exp.status === 'paid' ? 'rgba(16, 185, 129, 0.03)' : 'var(--surface-secondary)', 
+                borderRadius: '12px',
+                border: exp.status === 'paid' ? '1px solid rgba(16, 185, 129, 0.1)' : '1px solid transparent',
+                opacity: exp.status === 'paid' ? 0.7 : 1
+              }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '1.25rem' }}>{exp.icon}</span>
+                  <span style={{ fontSize: '1.25rem', filter: exp.status === 'paid' ? 'grayscale(100%)' : 'none' }}>{exp.icon}</span>
                   <div>
-                    <div style={{ fontSize: '0.8125rem', fontWeight: 700 }}>{exp.title}</div>
-                    <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Due {exp.date}</div>
+                    <div style={{ fontSize: '0.8125rem', fontWeight: 700, textDecoration: exp.status === 'paid' ? 'line-through' : 'none' }}>{exp.title}</div>
+                    <div style={{ fontSize: '0.6875rem', color: exp.status === 'paid' ? 'var(--success-color)' : 'var(--text-muted)' }}>
+                      {exp.status === 'paid' ? 'Completed' : `Due ${exp.dueDate}`}
+                    </div>
                   </div>
                 </div>
-                <div style={{ fontSize: '0.875rem', fontWeight: 800 }}>{formatRp(exp.amount)}</div>
+                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 800 }}>{formatRp(exp.amount)}</div>
+                  {exp.status === 'unpaid' && (
+                    <button style={{ 
+                      fontSize: '0.625rem', 
+                      fontWeight: 800, 
+                      padding: '2px 8px', 
+                      borderRadius: '4px', 
+                      backgroundColor: 'var(--primary-color)', 
+                      color: 'white', 
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}>PAY</button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
