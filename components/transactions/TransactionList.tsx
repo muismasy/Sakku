@@ -65,7 +65,11 @@ export function TransactionList({ isModalOpen, setIsModalOpen }: { isModalOpen: 
     };
 
     try {
-      await addDoc(collection(db, 'transactions'), newTx);
+      if (db) {
+        await addDoc(collection(db, 'transactions'), newTx);
+      } else {
+        console.warn("Firestore 'db' is not initialized. Transaction was not saved.");
+      }
     } catch (e) {
       console.warn("Mock DB add error:", e);
     }
