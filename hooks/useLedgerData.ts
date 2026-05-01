@@ -15,26 +15,39 @@ export function useLedgerData(ledgerId: string = 'ledger_123') {
     if (!user) return;
 
     const fetchTransactions = async () => {
-      console.log("Fetching transactions for ledger:", ledgerId);
+      console.log("🚀 Starting fetch for ledger:", ledgerId);
       setLoading(true);
+      setError(null);
+
+      // Create a timeout promise
+      const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Database request timed out")), 10000)
+      );
+
       try {
-        const { data, error } = await supabase
+        const fetchPromise = supabase
           .from('transactions')
           .select('*')
           .eq('ledgerId', ledgerId)
           .order('date', { ascending: false });
 
+        // Race between the fetch and the timeout
+        const result: any = await Promise.race([fetchPromise, timeout]);
+        const { data, error } = result;
+
         if (error) {
-          console.error("Supabase Error:", error);
+          console.error("❌ Supabase Error:", error);
           setError(error.message);
         } else {
+          console.log("✅ Data received:", data?.length || 0, "rows");
           setTransactions(data || []);
         }
       } catch (err: any) {
-        console.error("Critical Connection Error:", err);
+        console.error("⚠️ Connection issue:", err.message);
         setError(err.message || "Failed to connect to database");
       } finally {
         setLoading(false);
+        console.log("🏁 Loading finished");
       }
     };
 
