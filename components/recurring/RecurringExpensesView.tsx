@@ -239,7 +239,7 @@ export function RecurringExpensesView() {
       </div>
 
       <BottomSheet 
-        isOpen={isModalOpen} 
+        open={isModalOpen} 
         onClose={() => setIsModalOpen(false)}
         title={editingExpense ? 'Edit Automation' : 'New Automation Rule'}
       >
