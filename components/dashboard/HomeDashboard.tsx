@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { useLedgerData } from '@/hooks/useLedgerData';
+import { useAuth } from '@/hooks/useAuth';
 import { ProgressBar, Card, ListItem, Skeleton } from '@/components/ui';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Filler } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
