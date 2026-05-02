@@ -128,6 +128,9 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
           .badges-container {
             gap: 8px !important;
           }
+          .mobile-stack-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
 
@@ -185,37 +188,58 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
             </div>
           </div>
 
-          {/* Achievement Ribbons */}
-          <div className="badges-container" style={{ 
-            display: 'flex', 
-            gap: '8px', 
-            marginTop: '20px',
-            flexWrap: 'wrap'
-          }}>
-            {achievements.map(badge => (
-              <div 
-                key={badge.id}
-                title={badge.desc}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '4px 10px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  backdropFilter: 'blur(4px)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'white',
-                  fontSize: '0.6875rem',
-                  fontWeight: 700,
-                  cursor: 'help'
-                }}
-              >
-                <span>{badge.icon}</span>
-                {badge.label}
+          {/* Gamified Achievement Ribbons */}
+          {achievements.length > 0 && (
+            <div style={{ marginTop: '24px', position: 'relative' }}>
+              <div style={{ fontSize: '0.625rem', fontWeight: 800, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span>🏆</span> Hall of Fame
               </div>
-            ))}
-          </div>
+              <div className="badges-container" style={{ 
+                display: 'flex', 
+                gap: '12px', 
+                flexWrap: 'wrap'
+              }}>
+                {achievements.map(badge => (
+                  <div 
+                    key={badge.id}
+                    title={badge.desc}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '8px 16px',
+                      borderRadius: '12px',
+                      backgroundColor: 'rgba(0,0,0,0.25)',
+                      backdropFilter: 'blur(10px)',
+                      border: `1px solid ${badge.color}50`,
+                      boxShadow: `0 4px 15px rgba(0,0,0,0.2), inset 0 0 15px ${badge.color}15`,
+                      color: 'white',
+                      cursor: 'help',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-3px)';
+                      e.currentTarget.style.boxShadow = `0 8px 25px ${badge.color}40, inset 0 0 20px ${badge.color}30`;
+                      e.currentTarget.style.borderColor = badge.color;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = `0 4px 15px rgba(0,0,0,0.2), inset 0 0 15px ${badge.color}15`;
+                      e.currentTarget.style.borderColor = `${badge.color}50`;
+                    }}
+                  >
+                    <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', backgroundColor: badge.color }} />
+                    <span style={{ fontSize: '1.25rem', filter: `drop-shadow(0 0 6px ${badge.color}80)` }}>{badge.icon}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontSize: '0.8125rem', fontWeight: 800, letterSpacing: '0.02em', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>{badge.label}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div style={{ display: 'flex', gap: '48px', marginTop: '32px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
             <div>
@@ -267,7 +291,7 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
 
 
       {/* Previews Row: Fixed Expenses & Goals */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-section)' }}>
+      <div className="mobile-stack-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-section)' }}>
         {/* Fixed Expenses Preview - OPTIMIZED */}
         <Card>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>

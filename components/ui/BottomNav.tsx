@@ -26,13 +26,10 @@ const ListIcon = () => (
   </svg>
 );
 
-const TargetIcon = () => (
+const TrendingUpIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <circle cx="12" cy="12" r="6"/>
-    <circle cx="12" cy="12" r="2"/>
-    <path d="M14 10l8-8"/>
-    <path d="M17 2h5v5"/>
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+    <polyline points="16 7 22 7 22 13"></polyline>
   </svg>
 );
 
@@ -112,8 +109,8 @@ export function BottomNav({ activeView, onViewChange, onAddClick }: BottomNavPro
 
       <NavButton 
         active={activeView === 'savings'} 
-        icon={<TargetIcon />} 
-        label="Savings & Growth" 
+        icon={<TrendingUpIcon />} 
+        label="Growth" 
         onClick={() => onViewChange('savings')} 
       />
       <NavButton 
@@ -146,7 +143,6 @@ function NavButton({ active, icon, label, onClick }: { active: boolean, icon: Re
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px' }}>
         {icon}
       </div>
-      <span style={{ fontSize: '10px', fontWeight: active ? 600 : 400 }}>{label}</span>
     </button>
   );
 }

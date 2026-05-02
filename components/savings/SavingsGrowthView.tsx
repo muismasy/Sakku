@@ -127,16 +127,21 @@ export function SavingsGrowthView({ onSelectGoal, onSelectInvestment }: { onSele
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, letterSpacing: '-0.03em' }}>Savings & Growth</h1>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, letterSpacing: '-0.03em' }}>Growth</h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9375rem', marginTop: '4px' }}>Build your wealth and track your goals</p>
           </div>
-          {marketData && (
-            <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end', color: 'var(--success-color)', fontWeight: 600 }}>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }} /> Market Cached
+          {marketData ? (
+            <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end', color: 'var(--success-color)', fontWeight: 600 }}>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }} /> Market Cached
+                </div>
+                Updated: {marketData.lastUpdated}
               </div>
-              Updated: {marketData.lastUpdated}
+              <button onClick={() => setIsFabMenuOpen(true)} style={{ padding: '6px 12px', backgroundColor: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer' }}>+ Add New</button>
             </div>
+          ) : (
+            <button onClick={() => setIsFabMenuOpen(true)} style={{ padding: '8px 16px', backgroundColor: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}>+ Add New</button>
           )}
         </div>
       </div>
@@ -216,8 +221,7 @@ export function SavingsGrowthView({ onSelectGoal, onSelectInvestment }: { onSele
         </div>
       </section>
 
-      {/* FAB and Modals */}
-      <FAB onClick={() => setIsFabMenuOpen(true)} />
+      {/* Modals */}
 
       <BottomSheet open={isFabMenuOpen} onClose={() => setIsFabMenuOpen(false)} title="Add to Portfolio">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px' }}>

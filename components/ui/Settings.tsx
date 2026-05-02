@@ -9,9 +9,10 @@ interface SettingsProps {
   onNameChange: (name: string) => void;
   userEmail: string;
   onEmailChange: (email: string) => void;
+  onSignOut?: () => void;
 }
 
-export function Settings({ userName, onNameChange, userEmail, onEmailChange }: SettingsProps) {
+export function Settings({ userName, onNameChange, userEmail, onEmailChange, onSignOut }: SettingsProps) {
   const { theme, setTheme } = useTheme();
   
   // Local state for toggling edit mode
@@ -96,18 +97,33 @@ export function Settings({ userName, onNameChange, userEmail, onEmailChange }: S
               />
             ) : userEmail}
             action={
-              <button 
-                onClick={() => setIsEditingAccount(!isEditingAccount)}
-                style={isEditingAccount ? btnPrimary : btnSecondary}
-              >
-                {isEditingAccount ? 'Save' : 'Edit Profile'}
-              </button>
+              userName === 'Guest' ? null : (
+                <button 
+                  onClick={() => setIsEditingAccount(!isEditingAccount)}
+                  style={isEditingAccount ? btnPrimary : btnSecondary}
+                >
+                  {isEditingAccount ? 'Save' : 'Edit Profile'}
+                </button>
+              )
             }
           />
-          <Row 
-            icon={<Icons.StarIcon />} title="Subscription Plan" subtitle="Sakku Pro (Yearly)"
-            action={<button style={btnSecondary}>Manage</button>}
-          />
+          {userName === 'Guest' ? (
+             <Row 
+               icon={<Icons.UserIcon />} title="Guest Account" subtitle="Sync your data across devices"
+               action={<button onClick={() => window.location.href = '/login'} style={btnPrimary}>Sign In / Register</button>}
+             />
+          ) : (
+             <Row 
+               icon={<Icons.StarIcon />} title="Subscription Plan" subtitle="Sakku Pro (Yearly)"
+               action={<button style={btnSecondary}>Manage</button>}
+             />
+          )}
+          {userName !== 'Guest' && (
+             <Row 
+               icon={<Icons.LockIcon />} title="Sign Out" subtitle="Disconnect from this device"
+               action={<button onClick={onSignOut} style={{ ...btnSecondary, color: 'var(--danger-color)', borderColor: 'var(--danger-color)' }}>Log Out</button>}
+             />
+          )}
         </Section>
 
         {/* 2. Wallet */}

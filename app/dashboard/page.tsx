@@ -103,8 +103,6 @@ export default function DashboardPage() {
     );
   }
 
-  if (!user) return null; // Prevent flicker before redirect
-
   return (
     <div style={{ position: 'relative', minHeight: '100vh', backgroundColor: 'var(--bg-color)' }}>
       {/* Notion-style Floating Header (Fixed) */}
@@ -136,10 +134,8 @@ export default function DashboardPage() {
                 border: 'none',
                 display: 'flex',
                 alignItems: 'center',
-                color: 'var(--text-main)',
-                // Only show toggle on mobile
+                color: 'var(--text-main)'
               }}
-              className="mobile-only-toggle"
             >
               <span style={{ fontSize: '1rem' }}>☰</span>
             </button>
@@ -177,7 +173,6 @@ export default function DashboardPage() {
         activeView={activeView}
         onHide={() => setIsSidebarVisible(false)}
         userName={userName}
-        onSignOut={signOut}
         isSidebarVisible={isSidebarVisible}
       />
 
@@ -191,7 +186,7 @@ export default function DashboardPage() {
       }}>
         <style jsx>{`
           :global(:root) {
-            --sidebar-offset: 260px;
+            --sidebar-offset: ${isSidebarVisible ? '260px' : '0px'};
           }
           header {
             left: var(--sidebar-offset) !important;
@@ -259,6 +254,7 @@ export default function DashboardPage() {
               onNameChange={setUserName} 
               userEmail={userEmail} 
               onEmailChange={setUserEmail} 
+              onSignOut={signOut}
             />
           )}
         </div>

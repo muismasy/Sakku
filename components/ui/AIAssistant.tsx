@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLedgerData } from '@/hooks/useLedgerData';
 import { Card } from './Card';
+import { Bot } from 'lucide-react';
 
 export function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
@@ -115,7 +116,7 @@ export function AIAssistant() {
         onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1) rotate(10deg)'}
         onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1) rotate(0deg)'}
       >
-        {isOpen ? '✕' : '🪄'}
+        {isOpen ? '✕' : <Bot size={24} />}
       </button>
 
       {/* Chat Window */}

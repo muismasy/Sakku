@@ -67,9 +67,12 @@ export function BudgetView() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', paddingBottom: '120px' }}>
       {/* Header */}
-      <div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, letterSpacing: '-0.03em' }}>Monthly Budget</h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9375rem', marginTop: '4px' }}>Control your spending habits</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', margin: 0, letterSpacing: '-0.03em' }}>Monthly Budget</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9375rem', marginTop: '4px' }}>Control your spending habits</p>
+        </div>
+        <button onClick={() => setShowAdd(true)} style={{ padding: '8px 16px', backgroundColor: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}>+ Add New</button>
       </div>
 
       {/* Overview Card */}
@@ -144,8 +147,7 @@ export function BudgetView() {
         <GrowthBudgetSection />
       </div>
 
-      {/* FAB and Modal */}
-      <FAB onClick={() => setShowAdd(true)} />
+      {/* Modal */}
 
       <BottomSheet open={showAdd} onClose={() => setShowAdd(false)} title="New Budget Category">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingBottom: '20px' }}>

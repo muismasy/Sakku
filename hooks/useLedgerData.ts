@@ -21,16 +21,7 @@ function mapRow(row: any): Transaction {
   };
 }
 
-const DEMO_DATA: Transaction[] = [
-  { id: '1', ledgerId: 'demo', addedByUserId: 'me', amount: 12500000, type: 'income', category: 'Salary', description: 'Gaji Utama Mei', date: Date.now() - 86400000 * 2, source: 'web' },
-  { id: '2', ledgerId: 'demo', addedByUserId: 'me', amount: 45000, type: 'expense', category: 'Food', description: 'Nasi Goreng Kambing', date: Date.now() - 3600000 * 3, source: 'whatsapp' },
-  { id: '3', ledgerId: 'demo', addedByUserId: 'me', amount: 150000, type: 'expense', category: 'Transport', description: 'Isi Bensin Shell', date: Date.now() - 3600000 * 5, source: 'web' },
-  { id: '4', ledgerId: 'demo', addedByUserId: 'me', amount: 890000, type: 'expense', category: 'Shopping', description: 'Sepatu Lari Baru', date: Date.now() - 86400000 * 1, source: 'web' },
-  { id: '5', ledgerId: 'demo', addedByUserId: 'me', amount: 2500000, type: 'income', category: 'Salary', description: 'Bonus Project Freelance', date: Date.now() - 86400000 * 3, source: 'web' },
-  { id: '6', ledgerId: 'demo', addedByUserId: 'me', amount: 35000, type: 'expense', category: 'Food', description: 'Kopi Kenangan', date: Date.now() - 1800000, source: 'whatsapp' },
-  { id: '7', ledgerId: 'demo', addedByUserId: 'me', amount: 125000, type: 'expense', category: 'Bill', description: 'Tagihan Listrik', date: Date.now() - 86400000 * 4, source: 'web' },
-  { id: '8', ledgerId: 'demo', addedByUserId: 'me', amount: 500000, type: 'expense', category: 'Health', description: 'Checkup Dokter Gigi', date: Date.now() - 86400000 * 5, source: 'web' },
-];
+const DEMO_DATA: Transaction[] = []; // Emptied for real usage
 
 export function useLedgerData(ledgerId: string = '00000000-0000-0000-0000-000000000123') {
   const { user } = useAuth();
