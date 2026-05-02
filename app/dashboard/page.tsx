@@ -113,7 +113,7 @@ export default function DashboardPage() {
       <header style={{ 
         position: 'fixed', 
         top: 0, 
-        left: isSidebarVisible ? '260px' : 0, 
+        left: 'var(--sidebar-offset, 260px)', 
         right: 0, 
         height: '48px', 
         backgroundColor: 'rgba(255, 255, 255, 0.8)', 
@@ -138,8 +138,10 @@ export default function DashboardPage() {
                 border: 'none',
                 display: 'flex',
                 alignItems: 'center',
-                color: 'var(--text-main)'
+                color: 'var(--text-main)',
+                // Only show toggle on mobile
               }}
+              className="mobile-only-toggle"
             >
               <span style={{ fontSize: '1rem' }}>☰</span>
             </button>
@@ -168,31 +170,43 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {isSidebarVisible && (
-        <Sidebar 
-          activeLedgerId={activeLedgerId} 
-          onSelectLedger={setActiveLedgerId} 
-          ledgers={ledgers}
-          onCreateLedger={handleCreateLedger}
-          onViewChange={handleViewChange}
-          activeView={activeView}
-          onHide={() => setIsSidebarVisible(false)}
-          userName={userName}
-          onSignOut={signOut}
-        />
-      )}
+      <Sidebar 
+        activeLedgerId={activeLedgerId} 
+        onSelectLedger={setActiveLedgerId} 
+        ledgers={ledgers}
+        onCreateLedger={handleCreateLedger}
+        onViewChange={handleViewChange}
+        activeView={activeView}
+        onHide={() => setIsSidebarVisible(false)}
+        userName={userName}
+        onSignOut={signOut}
+        isSidebarVisible={isSidebarVisible}
+      />
 
       <main style={{ 
-        marginLeft: isSidebarVisible ? 'var(--sidebar-width, 260px)' : 0,
+        marginLeft: 'var(--sidebar-offset, 260px)',
         transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         paddingTop: '65px',
         minHeight: '100vh',
-        width: '100%'
+        width: 'auto',
+        flex: 1
       }}>
         <style jsx>{`
+          :global(:root) {
+            --sidebar-offset: 260px;
+          }
+          header {
+            left: var(--sidebar-offset) !important;
+          }
           @media (max-width: 768px) {
+            :global(:root) {
+              --sidebar-offset: 0px;
+            }
             main {
               margin-left: 0 !important;
+            }
+            header {
+              left: 0 !important;
             }
           }
         `}</style>

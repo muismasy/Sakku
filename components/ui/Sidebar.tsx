@@ -34,9 +34,10 @@ interface SidebarProps {
   onHide: () => void;
   userName: string;
   onSignOut: () => void;
+  isSidebarVisible?: boolean;
 }
 
-export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedger, onViewChange, activeView, onHide, userName, onSignOut }: SidebarProps) {
+export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedger, onViewChange, activeView, onHide, userName, onSignOut, isSidebarVisible }: SidebarProps) {
   const [isWorkspaceOpen, setIsWorkspaceOpen] = React.useState(true);
 
   const handleNavClick = (view: SidebarProps['onViewChange'] extends (v: infer V) => void ? V : never) => {
@@ -50,6 +51,25 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
 
   return (
     <>
+      <style jsx>{`
+        .sidebar-panel {
+          transform: translateX(0);
+        }
+        @media (max-width: 768px) {
+          .sidebar-panel {
+            transform: ${isSidebarVisible ? 'translateX(0)' : 'translateX(-100%)'};
+          }
+          .sidebar-backdrop {
+            display: ${isSidebarVisible ? 'block' : 'none'} !important;
+          }
+        }
+        @media (min-width: 769px) {
+          .sidebar-backdrop {
+            display: none !important;
+          }
+        }
+      `}</style>
+      
       {/* Backdrop overlay — visible only on mobile */}
       <div
         className="sidebar-backdrop"
@@ -62,7 +82,7 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
           bottom: 0,
           backgroundColor: 'rgba(0,0,0,0.2)',
           zIndex: 1000,
-          display: 'none' // Controlled by CSS media queries or external state
+          display: 'none'
         }}
       />
 
