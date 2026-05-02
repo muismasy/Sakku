@@ -16,15 +16,18 @@ interface CardProps {
   flat?: boolean;
   /** Additional inline styles */
   style?: React.CSSProperties;
+  /** Custom CSS class */
+  className?: string;
   /** Click handler — makes the card interactive */
   onClick?: () => void;
 }
 
-export function Card({ children, title, subtitle, headerAction, noPadding, flat, style, onClick }: CardProps) {
+export function Card({ children, title, subtitle, headerAction, noPadding, flat, style, onClick, className }: CardProps) {
   const [hovered, setHovered] = React.useState(false);
 
   return (
     <div
+      className={className}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
