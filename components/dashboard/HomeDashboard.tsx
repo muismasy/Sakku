@@ -26,6 +26,7 @@ interface HomeDashboardProps {
 export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransaction, onSelectGoal }: HomeDashboardProps) {
   const [mounted, setMounted] = React.useState(false);
   const { transactions, loading, error } = useLedgerData();
+  const { user } = useAuth();
 
   React.useEffect(() => { setMounted(true); }, []);
 
