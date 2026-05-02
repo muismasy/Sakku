@@ -24,6 +24,7 @@ export function Subscriptions() {
   const [isEditing, setIsEditing] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [todayDate] = useState(() => new Date().getDate());
 
   // Form state
   const [name, setName] = useState('');
@@ -47,7 +48,7 @@ export function Subscriptions() {
       } : s));
     } else {
       const newSub: Subscription = {
-        id: Date.now().toString(),
+        id: Date.now().toString(), // eslint-disable-line react-hooks/purity
         name,
         amount: parseInt(amount, 10),
         dueDate: parseInt(dueDate, 10),
@@ -146,7 +147,7 @@ export function Subscriptions() {
                   <div>
                     <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)' }}>{sub.name}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--danger-color)', fontWeight: 600 }}>
-                      Due in {sub.dueDate - new Date().getDate()} days
+                      Due in {sub.dueDate - todayDate} days
                     </div>
                   </div>
                 </div>

@@ -1,14 +1,21 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
+import dynamicImport from 'next/dynamic';
+
+const HomeDashboard = dynamicImport(() => import('@/components/dashboard/HomeDashboard').then(m => m.HomeDashboard), { ssr: false });
+const InvestmentTracker = dynamicImport(() => import('@/components/ui/InvestmentTracker').then(m => m.InvestmentTracker), { ssr: false });
+const ADHDCalendar = dynamicImport(() => import('@/components/ui/ADHDCalendar').then(m => m.ADHDCalendar), { ssr: false });
+const AIAssistant = dynamicImport(() => import('@/components/ui/AIAssistant').then(m => m.AIAssistant), { ssr: false });
+
 import React, { useState } from 'react';
 import { Sidebar } from '@/components/ui/Sidebar';
-import { ADHDCalendar } from '@/components/ui/ADHDCalendar';
 import { Subscriptions } from '@/components/ui/Subscriptions';
 import { Settings } from '@/components/ui/Settings';
 import { BottomNav } from '@/components/ui/BottomNav';
 import { GoalsView } from '@/components/goals/GoalsView';
 import { RecurringExpensesView } from '@/components/recurring/RecurringExpensesView';
-import { HomeDashboard } from '@/components/dashboard/HomeDashboard';
 import { TransactionsView } from '@/components/transactions/TransactionsView';
 import { AddTransactionForm } from '@/components/transactions/AddTransactionForm';
 import { BottomSheet } from '@/components/ui/BottomSheet';
@@ -18,10 +25,8 @@ import { WalletsView } from '@/components/wallets/WalletsView';
 import { GoalDetail } from '@/components/goals/GoalDetail';
 import { TransactionDetail } from '@/components/transactions/TransactionDetail';
 import { InvestmentDetail } from '@/components/investment/InvestmentDetail';
-import { InvestmentTracker } from '@/components/ui/InvestmentTracker';
 import { CategoriesView } from '@/components/categories/CategoriesView';
 import { ReportsView } from '@/components/reports/ReportsView';
-import { AIAssistant } from '@/components/ui/AIAssistant';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
@@ -79,26 +84,22 @@ export default function DashboardPage() {
     return (
       <div style={{ 
         minHeight: '100vh', 
-        backgroundColor: 'var(--bg-color)', 
+        backgroundColor: '#111', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center', 
-        color: 'var(--text-muted)',
+        color: '#A1A1AA',
         gap: '20px'
       }}>
         <div style={{ 
           width: '40px', 
           height: '40px', 
-          border: '3px solid var(--border-color)', 
-          borderTopColor: 'var(--primary-color)', 
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
+          border: '3px solid #262626', 
+          borderTopColor: '#6366F1', 
+          borderRadius: '50%'
         }} />
-        <p style={{ fontWeight: 600, letterSpacing: '0.02em' }}>Syncing Sakku...</p>
-        <style jsx>{`
-          @keyframes spin { to { transform: rotate(360deg); } }
-        `}</style>
+        <p style={{ fontWeight: 600 }}>Syncing Sakku...</p>
       </div>
     );
   }
@@ -150,7 +151,7 @@ export default function DashboardPage() {
             alignItems: 'center', 
             gap: '6px', 
             fontSize: '0.75rem', 
-            color: typeof window !== 'undefined' && !navigator.onLine ? 'var(--danger-color)' : 'var(--success-color)',
+            color: 'var(--success-color)',
             fontWeight: 700
           }}>
             <span style={{ 
@@ -159,7 +160,7 @@ export default function DashboardPage() {
               borderRadius: '50%', 
               backgroundColor: 'currentColor'
             }}></span> 
-            {typeof window !== 'undefined' && !navigator.onLine ? 'Offline' : 'Online'}
+            Online
           </div>
         </div>
       </header>

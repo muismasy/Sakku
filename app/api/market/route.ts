@@ -47,8 +47,11 @@ export async function GET(req: NextRequest) {
         updatedAt: new Date().toISOString()
       });
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Market API Error:', error);
-    return NextResponse.json({ error: 'Failed to fetch market data' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to fetch market data',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }

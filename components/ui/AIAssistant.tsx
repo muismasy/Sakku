@@ -71,7 +71,7 @@ export function AIAssistant() {
         }
         .magic-btn {
           bottom: 24px;
-          right: 24px;
+          right: 20px;
         }
         .chat-window {
           bottom: 90px;
@@ -81,7 +81,7 @@ export function AIAssistant() {
         @media (max-width: 768px) {
           .magic-btn {
             bottom: 80px; /* Higher on mobile to avoid BottomNav */
-            right: 16px;
+            right: 12px;
           }
           .chat-window {
             bottom: 145px;
@@ -98,13 +98,13 @@ export function AIAssistant() {
         onClick={() => setIsOpen(!isOpen)}
         style={{
           position: 'fixed',
-          width: '56px',
-          height: '56px',
-          borderRadius: '28px',
+          width: '44px',
+          height: '44px',
+          borderRadius: '22px',
           backgroundColor: 'var(--primary-color)',
           color: 'white',
           border: 'none',
-          boxShadow: '0 8px 24px rgba(79, 70, 229, 0.4)',
+          boxShadow: '0 6px 16px rgba(79, 70, 229, 0.3)',
           cursor: 'pointer',
           zIndex: 2000,
           display: 'flex',
@@ -116,7 +116,7 @@ export function AIAssistant() {
         onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1) rotate(10deg)'}
         onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1) rotate(0deg)'}
       >
-        {isOpen ? '✕' : <Bot size={24} />}
+        {isOpen ? '✕' : <Bot size={20} />}
       </button>
 
       {/* Chat Window */}

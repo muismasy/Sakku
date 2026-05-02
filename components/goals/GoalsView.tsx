@@ -1,21 +1,40 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoalCard } from './GoalCard';
 import { EmptyState } from './EmptyState';
 import { SakuPot } from '@/types';
+import { BottomSheet } from '@/components/ui/BottomSheet';
 
 export function GoalsView() {
-  const [goals, setGoals] = useState<SakuPot[]>([
-    { id: '1', ledgerId: 'l1', name: 'Beli Motor', targetAmount: 25000000, currentAmount: 8500000, streakDays: 12 },
-    { id: '2', ledgerId: 'l1', name: 'Liburan Bali', targetAmount: 10000000, currentAmount: 4500000, streakDays: 5 },
-    { id: '3', ledgerId: 'l1', name: 'Dana Darurat', targetAmount: 50000000, currentAmount: 12000000, streakDays: 30 },
-  ]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [goals, setGoals] = useState<SakuPot[]>([]);
 
-  const handleAddGoal = () => {
-    // In a real app, this would open a modal
-    const name = prompt('Goal Name:');
-    const target = prompt('Target Amount (Rp):');
+  useEffect(() => {
+    const saved = localStorage.getItem('sakku_goals');
+    if (saved) {
+      setGoals(JSON.parse(saved));
+    } else {
+      setGoals([
+        { id: '1', ledgerId: 'l1', name: 'Beli Motor', targetAmount: 25000000, currentAmount: 8500000, streakDays: 12 },
+        { id: '2', ledgerId: 'l1', name: 'Liburan Bali', targetAmount: 10000000, currentAmount: 4500000, streakDays: 5 },
+        { id: '3', ledgerId: 'l1', name: 'Dana Darurat', targetAmount: 50000000, currentAmount: 12000000, streakDays: 30 },
+      ]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (goals.length > 0) {
+      localStorage.setItem('sakku_goals', JSON.stringify(goals));
+    }
+  }, [goals]);
+
+  const handleSaveGoal = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const target = formData.get('target') as string;
+
     if (name && target) {
       const newGoal: SakuPot = {
         id: Date.now().toString(),
@@ -26,6 +45,7 @@ export function GoalsView() {
         streakDays: 0
       };
       setGoals([...goals, newGoal]);
+      setIsModalOpen(false);
     }
   };
 
@@ -56,7 +76,7 @@ export function GoalsView() {
           title="No goals yet"
           description="Start your savings journey by creating your first goal."
           ctaText="Create your first goal"
-          onCtaClick={handleAddGoal}
+          onCtaClick={() => setIsModalOpen(true)}
         />
       ) : (
         <div style={{ 
@@ -78,7 +98,7 @@ export function GoalsView() {
                 title={goal.name}
                 currentAmount={goal.currentAmount}
                 targetAmount={goal.targetAmount}
-                onClick={() => alert(`Opening details for ${goal.name}`)}
+                onClick={() => alert(`Details for ${goal.name} coming soon!`)}
               />
             </div>
           ))}
@@ -87,7 +107,7 @@ export function GoalsView() {
 
       {/* FAB - Floating Action Button */}
       <button 
-        onClick={handleAddGoal}
+        onClick={() => setIsModalOpen(true)}
         className="fab"
         style={{
           position: 'fixed',
@@ -113,6 +133,52 @@ export function GoalsView() {
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
       </button>
+
+      <BottomSheet 
+        open={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        title="Set New Savings Goal"
+      >
+        <form onSubmit={handleSaveGoal} style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '10px 0 32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Goal Name</label>
+            <input 
+              name="name"
+              required
+              placeholder="e.g. New Car, Wedding, Emergency Fund"
+              style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none', color: 'var(--text-main)' }}
+            />
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Target Amount (Rp)</label>
+            <input 
+              name="target"
+              type="number"
+              required
+              placeholder="e.g. 5000000"
+              style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none', color: 'var(--text-main)' }}
+            />
+          </div>
+
+          <button 
+            type="submit"
+            style={{ 
+              backgroundColor: 'var(--primary-color)', 
+              color: 'white', 
+              border: 'none', 
+              padding: '16px', 
+              borderRadius: '12px', 
+              fontWeight: 700,
+              marginTop: '10px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)'
+            }}
+          >
+            Create Goal
+          </button>
+        </form>
+      </BottomSheet>
 
       <style jsx>{`
         @keyframes fadeInUp {

@@ -29,37 +29,37 @@ export function InvestmentTracker() {
     const syncPrices = async () => {
       setIsSyncing(true);
       try {
-        const updatedAssets = await Promise.all(assets.map(async (asset) => {
-          // Determine ticker (Add .JK for Indonesian stocks if missing)
-          let ticker = asset.name;
-          if (asset.type === 'saham' && !ticker.includes('.')) {
-            ticker = `${ticker}.JK`;
-          }
-
-          try {
-            const res = await fetch(`/api/market?symbol=${ticker}&type=${asset.type}`);
-            const data = await res.json();
-            
-            if (data.price) {
-              return { ...asset, currentPrice: data.price };
+        // Use a functional update to avoid depending on 'assets' state directly
+        setAssets(currentAssets => {
+          // Trigger the async fetches for each asset
+          Promise.all(currentAssets.map(async (asset) => {
+            let ticker = asset.name;
+            if (asset.type === 'saham' && !ticker.includes('.')) {
+              ticker = `${ticker}.JK`;
             }
-          } catch (e) {
-            console.error(`Failed to sync ${ticker}:`, e);
-          }
-          return asset;
-        }));
 
-        setAssets(updatedAssets);
+            try {
+              const res = await fetch(`/api/market?symbol=${ticker}&type=${asset.type}`);
+              const data = await res.json();
+              if (data.price) {
+                // Update the asset in the state
+                setAssets(prev => prev.map(a => a.id === asset.id ? { ...a, currentPrice: data.price } : a));
+              }
+            } catch (e) {
+              console.error(`Failed to sync ${ticker}:`, e);
+            }
+          }));
+          return currentAssets;
+        });
       } finally {
         setIsSyncing(false);
       }
     };
 
     syncPrices();
-    // Refresh every 5 minutes if component stays open
     const interval = setInterval(syncPrices, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Keeping it empty to only run once on mount and then via interval
 
   // Form state
   const [name, setName] = useState('');

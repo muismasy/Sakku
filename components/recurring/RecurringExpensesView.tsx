@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RecurringExpense } from '@/types';
 import { Card, Tabs, BottomSheet } from '@/components/ui';
 
@@ -9,47 +9,49 @@ export function RecurringExpensesView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<RecurringExpense | null>(null);
   
-  const [expenses, setExpenses] = useState<RecurringExpense[]>([
-    { 
-      id: '1', 
-      ledgerId: 'l1',
-      title: 'Netflix Subscription', 
-      monthlyAmount: 186000, 
-      category: 'Entertainment', 
-      billingDay: 15, 
-      totalMonths: 999,
-      remainingMonths: 999,
-      startDate: Date.now(),
-      status: 'active',
-      nextBillingDate: Date.now()
-    },
-    { 
-      id: '2', 
-      ledgerId: 'l1',
-      title: 'House Loan', 
-      monthlyAmount: 4500000, 
-      category: 'Housing', 
-      billingDay: 5, 
-      totalMonths: 120, 
-      remainingMonths: 78,
-      startDate: Date.now(),
-      status: 'active',
-      nextBillingDate: Date.now()
-    },
-    { 
-      id: '3', 
-      ledgerId: 'l1',
-      title: 'Internet (Indihome)', 
-      monthlyAmount: 375000, 
-      category: 'Utilities', 
-      billingDay: 20, 
-      totalMonths: 999,
-      remainingMonths: 999,
-      startDate: Date.now(),
-      status: 'active',
-      nextBillingDate: Date.now()
+  const [expenses, setExpenses] = useState<RecurringExpense[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('sakku_recurring');
+    if (saved) {
+      setExpenses(JSON.parse(saved));
+    } else {
+      setExpenses([
+        { 
+          id: '1', 
+          ledgerId: 'l1',
+          title: 'Netflix Subscription', 
+          monthlyAmount: 186000, 
+          category: 'Entertainment', 
+          billingDay: 15, 
+          totalMonths: 999,
+          remainingMonths: 999,
+          startDate: Date.now(),
+          status: 'active',
+          nextBillingDate: Date.now()
+        },
+        { 
+          id: '2', 
+          ledgerId: 'l1',
+          title: 'House Loan', 
+          monthlyAmount: 4500000, 
+          category: 'Housing', 
+          billingDay: 5, 
+          totalMonths: 120, 
+          remainingMonths: 78,
+          startDate: Date.now(),
+          status: 'active',
+          nextBillingDate: Date.now()
+        }
+      ]);
     }
-  ]);
+  }, []);
+
+  useEffect(() => {
+    if (expenses.length > 0) {
+      localStorage.setItem('sakku_recurring', JSON.stringify(expenses));
+    }
+  }, [expenses]);
 
   const filteredExpenses = expenses.filter(e => {
     if (activeTab === 'all') return true;
@@ -60,25 +62,32 @@ export function RecurringExpensesView() {
     .filter(e => e.status === 'active')
     .reduce((sum, e) => sum + e.monthlyAmount, 0);
 
-  const handleToggleStatus = (id: string) => {
-    setExpenses(prev => prev.map(e => {
-      if (e.id === id) {
-        const nextStatus = e.status === 'active' ? 'paused' : 'active';
-        return { ...e, status: nextStatus as any };
-      }
-      return e;
-    }));
-  };
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    const newExpense: RecurringExpense = {
+      id: editingExpense?.id || Date.now().toString(),
+      ledgerId: 'l1',
+      title: formData.get('title') as string,
+      monthlyAmount: parseInt(formData.get('amount') as string, 10),
+      billingDay: parseInt(formData.get('billingDay') as string, 10),
+      category: formData.get('category') as string,
+      totalMonths: parseInt(formData.get('totalMonths') as string, 10) || 999,
+      remainingMonths: editingExpense ? editingExpense.remainingMonths : (parseInt(formData.get('totalMonths') as string, 10) || 999),
+      startDate: editingExpense?.startDate || Date.now(),
+      status: editingExpense?.status || 'active',
+      nextBillingDate: Date.now()
+    };
 
-  const handleEdit = (expense: RecurringExpense) => {
-    setEditingExpense(expense);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this rule?')) {
-      setExpenses(prev => prev.filter(e => e.id !== id));
+    if (editingExpense) {
+      setExpenses(prev => prev.map(e => e.id === editingExpense.id ? newExpense : e));
+    } else {
+      setExpenses(prev => [...prev, newExpense]);
     }
+    
+    setIsModalOpen(false);
+    setEditingExpense(null);
   };
 
   return (
@@ -243,14 +252,15 @@ export function RecurringExpensesView() {
         onClose={() => setIsModalOpen(false)}
         title={editingExpense ? 'Edit Automation' : 'New Automation Rule'}
       >
-        <form onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }} style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '10px 0 32px' }}>
+        <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '10px 0 32px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Description</label>
             <input 
               name="title"
+              required
               defaultValue={editingExpense?.title}
               placeholder="e.g. Netflix, Rent, Wifi"
-              style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none' }}
+              style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none', color: 'var(--text-main)' }}
             />
           </div>
           
@@ -260,8 +270,9 @@ export function RecurringExpensesView() {
               <input 
                 name="amount"
                 type="number"
+                required
                 defaultValue={editingExpense?.monthlyAmount}
-                style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none' }}
+                style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none', color: 'var(--text-main)' }}
               />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -269,10 +280,11 @@ export function RecurringExpensesView() {
               <input 
                 name="billingDay"
                 type="number"
+                required
                 min="1" max="31"
                 defaultValue={editingExpense?.billingDay}
                 placeholder="1-31"
-                style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none' }}
+                style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none', color: 'var(--text-main)' }}
               />
             </div>
           </div>
@@ -282,8 +294,9 @@ export function RecurringExpensesView() {
               <label style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Category</label>
               <select 
                 name="category"
+                required
                 defaultValue={editingExpense?.category}
-                style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none', height: '45px' }}
+                style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none', height: '45px', color: 'var(--text-main)' }}
               >
                 <option>Entertainment</option>
                 <option>Housing</option>
@@ -297,9 +310,9 @@ export function RecurringExpensesView() {
               <input 
                 name="totalMonths"
                 type="number"
-                defaultValue={editingExpense?.totalMonths || 0}
+                defaultValue={editingExpense?.totalMonths === 999 ? 0 : editingExpense?.totalMonths}
                 placeholder="0 for recurring"
-                style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none' }}
+                style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none', color: 'var(--text-main)' }}
               />
             </div>
           </div>

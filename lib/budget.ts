@@ -39,25 +39,22 @@ export async function checkBudgetAlerts(transaction: Transaction) {
 
     console.log(`Budget for ${transaction.category}: Spent ${newSpent} / ${envelope.monthlyLimit} (${Math.round(percentage * 100)}%)`);
 
-    let updates: Partial<BudgetEnvelope> = { currentSpent: newSpent };
-    let shouldAlert = false;
+    const updates: Partial<BudgetEnvelope> = { currentSpent: newSpent };
     let alertMessage = '';
 
     if (percentage >= 1 && !envelope.alertSent100) {
       alertMessage = `🚨 Alert: You have exceeded 100% of your budget for ${transaction.category}! (Spent: ${newSpent}/${envelope.monthlyLimit})`;
       updates.alertSent100 = true;
-      shouldAlert = true;
     } else if (percentage >= 0.8 && percentage < 1 && !envelope.alertSent80) {
       alertMessage = `⚠️ Warning: You have reached 80% of your budget for ${transaction.category}. (Spent: ${newSpent}/${envelope.monthlyLimit})`;
       updates.alertSent80 = true;
-      shouldAlert = true;
     }
 
     // 2. Update envelope in Firestore
     await updateDoc(doc(db, 'budgets', envelopeDoc.id), updates);
 
     // 3. Send WhatsApp Alert if needed
-    if (shouldAlert) {
+    if (alertMessage) {
       await sendWhatsAppAlert(transaction.addedByUserId, alertMessage);
     }
   } catch (error) {

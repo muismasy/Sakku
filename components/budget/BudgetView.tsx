@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Card, 
   ProgressBar, 
@@ -20,13 +20,28 @@ interface BudgetCategory {
 }
 
 export function BudgetView() {
-  const [categories, setCategories] = useState<BudgetCategory[]>([
-    { id: '1', name: 'Food & Dining', spent: 4500000, limit: 6000000, color: '#6366F1' },
-    { id: '2', name: 'Transportation', spent: 1200000, limit: 2000000, color: '#0EA5E9' },
-    { id: '3', name: 'Entertainment', spent: 2800000, limit: 3000000, color: '#F59E0B' },
-    { id: '4', name: 'Shopping', spent: 3500000, limit: 4000000, color: '#EF4444' },
-    { id: '5', name: 'Utilities', spent: 1500000, limit: 1500000, color: '#10B981' },
-  ]);
+  const [categories, setCategories] = useState<BudgetCategory[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('sakku_budget');
+    if (saved) {
+      setCategories(JSON.parse(saved));
+    } else {
+      setCategories([
+        { id: '1', name: 'Food & Dining', spent: 4500000, limit: 6000000, color: '#6366F1' },
+        { id: '2', name: 'Transportation', spent: 1200000, limit: 2000000, color: '#0EA5E9' },
+        { id: '3', name: 'Entertainment', spent: 2800000, limit: 3000000, color: '#F59E0B' },
+        { id: '4', name: 'Shopping', spent: 3500000, limit: 4000000, color: '#EF4444' },
+        { id: '5', name: 'Utilities', spent: 1500000, limit: 1500000, color: '#10B981' },
+      ]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      localStorage.setItem('sakku_budget', JSON.stringify(categories));
+    }
+  }, [categories]);
 
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
