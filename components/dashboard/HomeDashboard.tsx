@@ -117,6 +117,19 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-section)' }}>
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .hero-section {
+            padding: 24px 0 !important;
+          }
+          .balance-text {
+            font-size: 2.5rem !important;
+          }
+          .badges-container {
+            gap: 8px !important;
+          }
+        }
+      `}</style>
 
       {/* Greeting & Header */}
       <section style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -147,7 +160,7 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
       </section>
 
       {/* Balance Hero Card */}
-      <Card style={{
+      <Card className="hero-section" style={{
         background: 'linear-gradient(145deg, #1e1b4b 0%, #312e81 100%)',
         padding: '32px',
         color: '#fff',
@@ -163,7 +176,7 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
               <p style={{ fontSize: '0.875rem', opacity: 0.7, margin: '0 0 8px', fontWeight: 600, letterSpacing: '0.02em' }}>Available Balance</p>
-              <h2 style={{ fontSize: '2.75rem', fontWeight: 800, margin: 0, letterSpacing: '-0.03em' }}>
+              <h2 className="balance-text" style={{ fontSize: '2.75rem', fontWeight: 800, margin: 0, letterSpacing: '-0.03em' }}>
                 Rp {totalBalance.toLocaleString('id-ID')}
               </h2>
             </div>
@@ -173,7 +186,7 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
           </div>
 
           {/* Achievement Ribbons */}
-          <div style={{ 
+          <div className="badges-container" style={{ 
             display: 'flex', 
             gap: '8px', 
             marginTop: '20px',

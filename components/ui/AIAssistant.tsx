@@ -63,13 +63,40 @@ export function AIAssistant() {
 
   return (
     <>
+      <style jsx>{`
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .magic-btn {
+          bottom: 24px;
+          right: 24px;
+        }
+        .chat-window {
+          bottom: 90px;
+          right: 24px;
+          width: 320px;
+        }
+        @media (max-width: 768px) {
+          .magic-btn {
+            bottom: 80px; /* Higher on mobile to avoid BottomNav */
+            right: 16px;
+          }
+          .chat-window {
+            bottom: 145px;
+            right: 16px;
+            left: 16px; /* Full width padding on mobile */
+            width: auto;
+          }
+        }
+      `}</style>
+
       {/* Floating Button */}
       <button
+        className="magic-btn"
         onClick={() => setIsOpen(!isOpen)}
         style={{
           position: 'fixed',
-          bottom: '24px',
-          right: '24px',
           width: '56px',
           height: '56px',
           borderRadius: '28px',
@@ -93,27 +120,20 @@ export function AIAssistant() {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card style={{
+        <div className="chat-window" style={{
           position: 'fixed',
-          bottom: '90px',
-          right: '24px',
-          width: '320px',
           height: '450px',
           zIndex: 2000,
           display: 'flex',
           flexDirection: 'column',
           padding: 0,
           overflow: 'hidden',
+          backgroundColor: 'var(--surface-color)',
+          borderRadius: '16px',
+          border: '1px solid var(--border-color)',
           boxShadow: '0 12px 48px rgba(0,0,0,0.15)',
           animation: 'slideUp 0.3s ease-out'
         }}>
-          <style jsx>{`
-            @keyframes slideUp {
-              from { transform: translateY(20px); opacity: 0; }
-              to { transform: translateY(0); opacity: 1; }
-            }
-          `}</style>
-          
           {/* Header */}
           <div style={{ padding: '16px', background: 'var(--primary-color)', color: 'white' }}>
             <div style={{ fontWeight: 800, fontSize: '0.875rem' }}>Sakku AI</div>
