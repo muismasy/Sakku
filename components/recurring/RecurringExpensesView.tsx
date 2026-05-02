@@ -12,49 +12,59 @@ export function RecurringExpensesView() {
   const [expenses, setExpenses] = useState<RecurringExpense[]>([
     { 
       id: '1', 
-      name: 'Netflix Subscription', 
-      amount: 186000, 
+      ledgerId: 'l1',
+      title: 'Netflix Subscription', 
+      monthlyAmount: 186000, 
       category: 'Entertainment', 
       billingDay: 15, 
-      period: 'Monthly',
-      status: 'active'
+      totalMonths: 999,
+      remainingMonths: 999,
+      startDate: Date.now(),
+      status: 'active',
+      nextBillingDate: Date.now()
     },
     { 
       id: '2', 
-      name: 'House Loan', 
-      amount: 4500000, 
+      ledgerId: 'l1',
+      title: 'House Loan', 
+      monthlyAmount: 4500000, 
       category: 'Housing', 
       billingDay: 5, 
-      period: 'Monthly', 
       totalMonths: 120, 
-      currentMonth: 42,
-      status: 'active'
+      remainingMonths: 78,
+      startDate: Date.now(),
+      status: 'active',
+      nextBillingDate: Date.now()
     },
     { 
       id: '3', 
-      name: 'Internet (Indihome)', 
-      amount: 375000, 
+      ledgerId: 'l1',
+      title: 'Internet (Indihome)', 
+      monthlyAmount: 375000, 
       category: 'Utilities', 
       billingDay: 20, 
-      period: 'Monthly',
-      status: 'active'
+      totalMonths: 999,
+      remainingMonths: 999,
+      startDate: Date.now(),
+      status: 'active',
+      nextBillingDate: Date.now()
     }
   ]);
 
   const filteredExpenses = expenses.filter(e => {
     if (activeTab === 'all') return true;
-    return (e as any).status === activeTab;
+    return e.status === activeTab;
   });
 
   const totalMonthly = expenses
-    .filter(e => (e as any).status === 'active')
-    .reduce((sum, e) => sum + e.amount, 0);
+    .filter(e => e.status === 'active')
+    .reduce((sum, e) => sum + e.monthlyAmount, 0);
 
   const handleToggleStatus = (id: string) => {
     setExpenses(prev => prev.map(e => {
       if (e.id === id) {
-        const nextStatus = (e as any).status === 'active' ? 'paused' : 'active';
-        return { ...e, status: nextStatus };
+        const nextStatus = e.status === 'active' ? 'paused' : 'active';
+        return { ...e, status: nextStatus as any };
       }
       return e;
     }));
@@ -104,7 +114,7 @@ export function RecurringExpensesView() {
         </div>
         <div>
           <div style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Active Automations</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>{expenses.filter(e => (e as any).status === 'active').length}</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>{expenses.filter(e => e.status === 'active').length}</div>
         </div>
       </div>
 
@@ -131,7 +141,7 @@ export function RecurringExpensesView() {
             display: 'flex',
             flexDirection: 'column',
             gap: '16px',
-            opacity: (expense as any).status === 'paused' ? 0.6 : 1
+            opacity: expense.status === 'paused' ? 0.6 : 1
           }}>
             <div style={{ position: 'absolute', top: '16px', right: '16px' }}>
                <span style={{ 
@@ -161,7 +171,7 @@ export function RecurringExpensesView() {
                 {getCategoryIcon(expense.category)}
               </div>
               <div>
-                <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, margin: 0 }}>{expense.name}</h3>
+                <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, margin: 0 }}>{expense.title}</h3>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>{expense.category}</p>
               </div>
             </div>
@@ -170,23 +180,23 @@ export function RecurringExpensesView() {
               <div>
                 <div style={{ fontSize: '0.625rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Amount</div>
                 <div style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                  Rp {expense.amount.toLocaleString('id-ID')}
+                  Rp {expense.monthlyAmount.toLocaleString('id-ID')}
                 </div>
               </div>
-              {expense.totalMonths && (
+              {expense.totalMonths < 999 && (
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.625rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Tenure</div>
+                  <div style={{ fontSize: '0.625rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Paid</div>
                   <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--primary-color)' }}>
-                    {expense.currentMonth} / {expense.totalMonths}
+                    {expense.totalMonths - expense.remainingMonths} / {expense.totalMonths}
                   </div>
                 </div>
               )}
             </div>
 
-            {expense.totalMonths && (
+            {expense.totalMonths < 999 && (
               <div style={{ width: '100%', height: '6px', backgroundColor: 'var(--surface-secondary)', borderRadius: '3px', overflow: 'hidden' }}>
                 <div style={{ 
-                  width: `${(expense.currentMonth! / expense.totalMonths!) * 100}%`, 
+                  width: `${((expense.totalMonths - expense.remainingMonths) / expense.totalMonths) * 100}%`, 
                   height: '100%', 
                   backgroundColor: 'var(--primary-color)',
                   borderRadius: '3px'
@@ -208,14 +218,14 @@ export function RecurringExpensesView() {
                   padding: '8px', 
                   borderRadius: '8px', 
                   border: '1px solid var(--border-color)', 
-                  background: (expense as any).status === 'active' ? '#fff' : 'var(--primary-color)',
-                  color: (expense as any).status === 'active' ? 'var(--text-main)' : '#fff',
+                  background: expense.status === 'active' ? '#fff' : 'var(--primary-color)',
+                  color: expense.status === 'active' ? 'var(--text-main)' : '#fff',
                   fontSize: '0.75rem', 
                   fontWeight: 700, 
                   cursor: 'pointer' 
                 }}
               >
-                {(expense as any).status === 'active' ? 'Pause' : 'Resume'}
+                {expense.status === 'active' ? 'Pause' : 'Resume'}
               </button>
               <button 
                 onClick={() => handleDelete(expense.id)}
@@ -233,11 +243,12 @@ export function RecurringExpensesView() {
         onClose={() => setIsModalOpen(false)}
         title={editingExpense ? 'Edit Automation' : 'New Automation Rule'}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '10px 0 32px' }}>
+        <form onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }} style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '10px 0 32px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Description</label>
             <input 
-              defaultValue={editingExpense?.name}
+              name="title"
+              defaultValue={editingExpense?.title}
               placeholder="e.g. Netflix, Rent, Wifi"
               style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none' }}
             />
@@ -247,14 +258,16 @@ export function RecurringExpensesView() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Amount (Rp)</label>
               <input 
+                name="amount"
                 type="number"
-                defaultValue={editingExpense?.amount}
+                defaultValue={editingExpense?.monthlyAmount}
                 style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none' }}
               />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Billing Day</label>
               <input 
+                name="billingDay"
                 type="number"
                 min="1" max="31"
                 defaultValue={editingExpense?.billingDay}
@@ -268,6 +281,7 @@ export function RecurringExpensesView() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Category</label>
               <select 
+                name="category"
                 defaultValue={editingExpense?.category}
                 style={{ padding: '12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--surface-secondary)', outline: 'none', height: '45px' }}
               >
@@ -281,6 +295,7 @@ export function RecurringExpensesView() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Total Tenure (Mo)</label>
               <input 
+                name="totalMonths"
                 type="number"
                 defaultValue={editingExpense?.totalMonths || 0}
                 placeholder="0 for recurring"
@@ -290,7 +305,7 @@ export function RecurringExpensesView() {
           </div>
 
           <button 
-            onClick={() => setIsModalOpen(false)}
+            type="submit"
             style={{ 
               backgroundColor: 'var(--primary-color)', 
               color: 'white', 
@@ -305,7 +320,7 @@ export function RecurringExpensesView() {
           >
             {editingExpense ? 'Save Changes' : 'Enable Automation'}
           </button>
-        </div>
+        </form>
       </BottomSheet>
     </div>
   );
