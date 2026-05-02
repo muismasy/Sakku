@@ -50,7 +50,9 @@ export interface RecurringExpense {
   id: string;
   ledgerId: string;
   title: string;
+  category: string;
   monthlyAmount: number;
+  billingDay: number; // The day of the month the bill is due (1-31)
   totalMonths: number;
   remainingMonths: number;
   startDate: number; // Timestamp
