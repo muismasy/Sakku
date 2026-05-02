@@ -1,33 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { GoalCard } from './GoalCard';
 import { EmptyState } from './EmptyState';
 import { SakuPot } from '@/types';
 import { BottomSheet } from '@/components/ui/BottomSheet';
+import { useLedger } from '@/hooks/useLedgerData';
 
 export function GoalsView() {
+  const { goals, addGoal } = useLedger();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [goals, setGoals] = useState<SakuPot[]>([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('sakku_goals');
-    if (saved) {
-      setGoals(JSON.parse(saved));
-    } else {
-      setGoals([
-        { id: '1', ledgerId: 'l1', name: 'Beli Motor', targetAmount: 25000000, currentAmount: 8500000, streakDays: 12 },
-        { id: '2', ledgerId: 'l1', name: 'Liburan Bali', targetAmount: 10000000, currentAmount: 4500000, streakDays: 5 },
-        { id: '3', ledgerId: 'l1', name: 'Dana Darurat', targetAmount: 50000000, currentAmount: 12000000, streakDays: 30 },
-      ]);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (goals.length > 0) {
-      localStorage.setItem('sakku_goals', JSON.stringify(goals));
-    }
-  }, [goals]);
 
   const handleSaveGoal = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,15 +18,12 @@ export function GoalsView() {
     const target = formData.get('target') as string;
 
     if (name && target) {
-      const newGoal: SakuPot = {
-        id: Date.now().toString(),
-        ledgerId: 'l1',
+      addGoal({
         name,
         targetAmount: parseInt(target, 10),
         currentAmount: 0,
         streakDays: 0
-      };
-      setGoals([...goals, newGoal]);
+      });
       setIsModalOpen(false);
     }
   };

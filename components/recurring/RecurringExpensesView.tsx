@@ -1,57 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { RecurringExpense } from '@/types';
 import { Card, Tabs, BottomSheet } from '@/components/ui';
+import { useLedger } from '@/hooks/useLedgerData';
 
 export function RecurringExpensesView() {
+  const { recurringExpenses: expenses, addRecurring, updateRecurring, deleteRecurring } = useLedger();
   const [activeTab, setActiveTab] = useState('active');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<RecurringExpense | null>(null);
-  
-  const [expenses, setExpenses] = useState<RecurringExpense[]>([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('sakku_recurring');
-    if (saved) {
-      setExpenses(JSON.parse(saved));
-    } else {
-      setExpenses([
-        { 
-          id: '1', 
-          ledgerId: 'l1',
-          title: 'Netflix Subscription', 
-          monthlyAmount: 186000, 
-          category: 'Entertainment', 
-          billingDay: 15, 
-          totalMonths: 999,
-          remainingMonths: 999,
-          startDate: Date.now(),
-          status: 'active',
-          nextBillingDate: Date.now()
-        },
-        { 
-          id: '2', 
-          ledgerId: 'l1',
-          title: 'House Loan', 
-          monthlyAmount: 4500000, 
-          category: 'Housing', 
-          billingDay: 5, 
-          totalMonths: 120, 
-          remainingMonths: 78,
-          startDate: Date.now(),
-          status: 'active',
-          nextBillingDate: Date.now()
-        }
-      ]);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (expenses.length > 0) {
-      localStorage.setItem('sakku_recurring', JSON.stringify(expenses));
-    }
-  }, [expenses]);
 
   const filteredExpenses = expenses.filter(e => {
     if (activeTab === 'all') return true;
@@ -66,24 +24,22 @@ export function RecurringExpensesView() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
-    const newExpense: RecurringExpense = {
-      id: editingExpense?.id || Date.now().toString(),
-      ledgerId: 'l1',
+    const expenseData: Omit<RecurringExpense, 'id' | 'ledgerId'> = {
       title: formData.get('title') as string,
       monthlyAmount: parseInt(formData.get('amount') as string, 10),
-      billingDay: parseInt(formData.get('billingDay') as string, 10),
+      billingDay: parseInt(formData.get('day') as string, 10),
       category: formData.get('category') as string,
-      totalMonths: parseInt(formData.get('totalMonths') as string, 10) || 999,
-      remainingMonths: editingExpense ? editingExpense.remainingMonths : (parseInt(formData.get('totalMonths') as string, 10) || 999),
-      startDate: editingExpense?.startDate || Date.now(),
-      status: editingExpense?.status || 'active',
+      totalMonths: 999,
+      remainingMonths: 999,
+      startDate: Date.now(),
+      status: 'active',
       nextBillingDate: Date.now()
     };
 
     if (editingExpense) {
-      setExpenses(prev => prev.map(e => e.id === editingExpense.id ? newExpense : e));
+      updateRecurring(editingExpense.id, expenseData);
     } else {
-      setExpenses(prev => [...prev, newExpense]);
+      addRecurring(expenseData);
     }
     
     setIsModalOpen(false);

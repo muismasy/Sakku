@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useLedgerData } from '@/hooks/useLedgerData';
+import { useLedger } from '@/hooks/useLedgerData';
 import { Card } from './Card';
 import { Bot } from 'lucide-react';
 
@@ -11,7 +11,7 @@ export function AIAssistant() {
     { role: 'assistant', text: 'Halo! Saya Sakku AI. Ada yang bisa saya bantu cek dari keuangan Anda hari ini? 🪄' }
   ]);
   const [input, setInput] = useState('');
-  const { transactions } = useLedgerData();
+  const { transactions } = useLedger();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

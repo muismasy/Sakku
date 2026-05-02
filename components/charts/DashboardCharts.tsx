@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title } from 'chart.js';
 import { Doughnut, Line } from 'react-chartjs-2';
-import { useLedgerData } from '@/hooks/useLedgerData';
+import { useLedger } from '@/hooks/useLedgerData';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title);
 
@@ -13,7 +13,7 @@ export function DashboardCharts() {
     setMounted(true);
   }, []);
 
-  const { transactions } = useLedgerData();
+  const { transactions } = useLedger();
   const doughnutData = useMemo(() => {
     const categoryTotals: Record<string, number> = {};
     transactions.filter(t => t.type === 'expense').forEach(tx => {

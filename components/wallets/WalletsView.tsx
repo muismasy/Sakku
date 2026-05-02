@@ -1,39 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { WalletCard } from './WalletCard';
 import { Card, Tabs, BottomSheet } from '../ui';
 import { TransferForm } from './TransferForm';
 import * as Icons from '../ui/Icons';
 import { Wallet } from '@/types';
+import { useLedger } from '@/hooks/useLedgerData';
 
 export function WalletsView() {
+  const { wallets, addWallet, updateWallet, deleteWallet } = useLedger();
   const [activeTab, setActiveTab] = useState('all');
   const [isTransferOpen, setIsTransferOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingWalletId, setEditingWalletId] = useState<string | null>(null);
-  
-  const [wallets, setWallets] = useState<Wallet[]>([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('sakku_wallets');
-    if (saved) {
-      setWallets(JSON.parse(saved));
-    } else {
-      setWallets([
-        { id: '1', name: 'Bank BCA', type: 'bank', balance: 24500000, currency: 'IDR', color: '#0066AE', lastUpdated: 1714636800000 },
-        { id: '2', name: 'GoPay', type: 'e-wallet', balance: 1250000, currency: 'IDR', color: '#00AED6', lastUpdated: 1714636800000 },
-        { id: '3', name: 'Physical Cash', type: 'cash', balance: 450000, currency: 'IDR', color: '#10B981', lastUpdated: 1714636800000 },
-        { id: '4', name: 'Bank Mandiri', type: 'bank', balance: 8900000, currency: 'IDR', color: '#F9C11C', lastUpdated: 1714636800000 }
-      ]);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (wallets.length > 0) {
-      localStorage.setItem('sakku_wallets', JSON.stringify(wallets));
-    }
-  }, [wallets]);
 
   // New Wallet form state
   const [showAddWallet, setShowAddWallet] = useState(false);
@@ -52,27 +32,25 @@ export function WalletsView() {
 
   const handleAddWallet = () => {
     if (!newName || !newBalance) return;
-    const newWallet: Wallet = {
-      id: `w_${Date.now()}`, // eslint-disable-line react-hooks/purity
+    addWallet({
       name: newName,
       type: newType,
       balance: parseInt(newBalance, 10),
       currency: 'IDR',
       color: newColor,
-      lastUpdated: Date.now() // eslint-disable-line react-hooks/purity
-    };
-    setWallets([...wallets, newWallet]);
+      lastUpdated: Date.now()
+    });
     setNewName(''); setNewBalance(''); setShowAddWallet(false);
   };
 
   const handleUpdateWallet = (id: string, updates: Partial<Wallet>) => {
-    setWallets(wallets.map(w => w.id === id ? { ...w, ...updates } : w));
+    updateWallet(id, updates);
   };
 
   const handleDeleteWallet = (id: string) => {
     const wallet = wallets.find(w => w.id === id);
     if (wallet && confirm(`Delete wallet "${wallet.name}"? This will also affect your history.`)) {
-      setWallets(wallets.filter(w => w.id !== id));
+      deleteWallet(id);
       if (editingWalletId === id) setEditingWalletId(null);
     }
   };

@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Transaction } from '@/types';
-import { useLedgerData } from '@/hooks/useLedgerData';
+import { useLedger } from '@/hooks/useLedgerData';
 import { 
   InputField, 
   Tabs, 
@@ -12,7 +12,7 @@ import {
 import * as Icons from '../ui/Icons';
 
 export function TransactionsView({ onAddClick, onSelectTransaction }: { onAddClick: () => void, onSelectTransaction: (id: string) => void }) {
-  const { transactions, loading } = useLedgerData();
+  const { transactions, loading } = useLedger();
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date());

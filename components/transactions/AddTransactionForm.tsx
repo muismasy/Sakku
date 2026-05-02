@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Transaction } from '@/types';
 import { InputField, Card } from '@/components/ui';
 import * as Icons from '../ui/Icons';
-import { useLedgerData } from '@/hooks/useLedgerData';
+import { useLedger } from '@/hooks/useLedgerData';
 
 interface AddTransactionFormProps {
   onSuccess: () => void;
@@ -119,7 +119,7 @@ export function AddTransactionForm({ onSuccess, onCancel }: AddTransactionFormPr
     { name: 'Other', icon: <Icons.SparklesIcon />, color: '#576574' },
   ];
 
-  const { addTransaction } = useLedgerData();
+  const { addTransaction } = useLedger();
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();

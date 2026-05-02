@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { useLedgerData } from '@/hooks/useLedgerData';
+import { useLedger } from '@/hooks/useLedgerData';
 
 export function ADHDCalendar() {
   const [mounted, setMounted] = React.useState(false);
-  const { transactions } = useLedgerData();
+  const { transactions } = useLedger();
 
   React.useEffect(() => {
     setMounted(true);
@@ -63,8 +63,8 @@ export function ADHDCalendar() {
       </div>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem', textAlign: 'center' }}>
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
-          <div key={d} style={{ fontWeight: 700, fontSize: '0.625rem', color: 'var(--text-muted)', paddingBottom: '4px' }}>{d}</div>
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, idx) => (
+          <div key={`day-${idx}`} style={{ fontWeight: 700, fontSize: '0.625rem', color: 'var(--text-muted)', paddingBottom: '4px' }}>{d}</div>
         ))}
         {days.map((day, idx) => {
           const stats = day ? dayStats[day] : null;

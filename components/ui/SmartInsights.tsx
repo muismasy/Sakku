@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useLedgerData } from '@/hooks/useLedgerData';
+import { useLedger } from '@/hooks/useLedgerData';
 import * as Icons from './Icons';
 
 export function SmartInsights() {
-  const { transactions } = useLedgerData();
+  const { transactions } = useLedger();
   const [insight, setInsight] = useState<string>("Analyzing your spending patterns...");
   const [loading, setLoading] = useState(false);
 

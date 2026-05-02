@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { Transaction } from '@/types';
-import { useLedgerData } from '@/hooks/useLedgerData';
+import { useLedger } from '@/hooks/useLedgerData';
 import { db } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import * as Icons from '../ui/Icons';
 
 export function TransactionList({ isModalOpen, setIsModalOpen }: { isModalOpen: boolean, setIsModalOpen: (open: boolean) => void }) {
-  const { transactions, loading, ledgerId } = useLedgerData();
+  const { transactions, loading, ledgerId } = useLedger();
   const [filter, setFilter] = useState<'all' | 'expense' | 'income'>('all');
   const [search, setSearch] = useState('');
   
