@@ -58,6 +58,7 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
         @media (max-width: 768px) {
           .sidebar-panel {
             transform: ${isSidebarVisible ? 'translateX(0)' : 'translateX(-100%)'};
+            box-shadow: 20px 0 50px rgba(0,0,0,0.1);
           }
           .sidebar-backdrop {
             display: ${isSidebarVisible ? 'block' : 'none'} !important;
@@ -101,14 +102,6 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
         transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         overflowY: 'hidden'
       }}>
-        <style jsx>{`
-          @media (max-width: 768px) {
-            .sidebar-panel {
-              box-shadow: 20px 0 50px rgba(0,0,0,0.1);
-            }
-          }
-        `}</style>
-
         {/* User Profile Header */}
         <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

@@ -196,7 +196,7 @@ export function AIAssistant() {
               🚀
             </button>
           </div>
-        </Card>
+        </div>
       )}
     </>
   );
