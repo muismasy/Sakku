@@ -21,6 +21,7 @@ import { InvestmentDetail } from '@/components/investment/InvestmentDetail';
 import { InvestmentTracker } from '@/components/ui/InvestmentTracker';
 import { CategoriesView } from '@/components/categories/CategoriesView';
 import { ReportsView } from '@/components/reports/ReportsView';
+import { AIAssistant } from '@/components/ui/AIAssistant';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
@@ -260,6 +261,8 @@ export default function DashboardPage() {
         onViewChange={handleViewChange} 
         onAddClick={() => setIsAddModalOpen(true)} 
       />
+      {/* Floating AI Assistant */}
+      <AIAssistant />
     </div>
   );
 }
