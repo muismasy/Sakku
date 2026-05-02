@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Icons from './Icons';
 import { Card } from './Card';
 
@@ -22,6 +22,44 @@ export function InvestmentTracker() {
   const [isEditing, setIsEditing] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Auto-sync market prices
+  useEffect(() => {
+    const syncPrices = async () => {
+      setIsSyncing(true);
+      try {
+        const updatedAssets = await Promise.all(assets.map(async (asset) => {
+          // Determine ticker (Add .JK for Indonesian stocks if missing)
+          let ticker = asset.name;
+          if (asset.type === 'saham' && !ticker.includes('.')) {
+            ticker = `${ticker}.JK`;
+          }
+
+          try {
+            const res = await fetch(`/api/market?symbol=${ticker}&type=${asset.type}`);
+            const data = await res.json();
+            
+            if (data.price) {
+              return { ...asset, currentPrice: data.price };
+            }
+          } catch (e) {
+            console.error(`Failed to sync ${ticker}:`, e);
+          }
+          return asset;
+        }));
+
+        setAssets(updatedAssets);
+      } finally {
+        setIsSyncing(false);
+      }
+    };
+
+    syncPrices();
+    // Refresh every 5 minutes if component stays open
+    const interval = setInterval(syncPrices, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Form state
   const [name, setName] = useState('');
@@ -83,7 +121,12 @@ export function InvestmentTracker() {
     <Card style={{ padding: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', margin: 0 }}>Investment Tracker</h2>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {isSyncing && (
+            <span style={{ fontSize: '0.625rem', color: 'var(--primary-color)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', animation: 'pulse 2s infinite' }}>
+              Syncing Live...
+            </span>
+          )}
           <button 
             onClick={() => setIsEditing(!isEditing)} 
             style={{ fontSize: '0.75rem', color: isEditing ? 'var(--primary-color)' : 'var(--text-muted)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}
@@ -100,6 +143,13 @@ export function InvestmentTracker() {
           )}
         </div>
       </div>
+      <style jsx>{`
+        @keyframes pulse {
+          0% { opacity: 0.5; }
+          50% { opacity: 1; }
+          100% { opacity: 0.5; }
+        }
+      `}</style>
 
       <div style={{ marginBottom: '2rem', padding: '1.25rem', backgroundColor: 'var(--surface-secondary)', borderRadius: '12px' }}>
         <div className="text-muted" style={{ fontSize: '0.75rem', fontWeight: 600 }}>Total Portfolio Value</div>

@@ -50,7 +50,7 @@ export function BottomNav({ activeView, onViewChange, onAddClick }: BottomNavPro
         left: 0,
         right: 0,
         height: '80px',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backgroundColor: 'var(--glass-surface)',
         backdropFilter: 'blur(20px)',
         borderTop: '1px solid var(--border-color)',
         display: 'flex',
@@ -134,7 +134,7 @@ function NavButton({ active, icon, label, onClick }: { active: boolean, icon: Re
         gap: '4px',
         border: 'none',
         background: 'none',
-        color: active ? '#4F46E5' : 'var(--text-muted)',
+        color: active ? 'var(--primary-color)' : 'var(--text-muted)',
         padding: '8px',
         cursor: 'pointer',
         transition: 'color 0.2s'

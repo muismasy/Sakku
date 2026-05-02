@@ -112,7 +112,7 @@ export default function DashboardPage() {
         left: 'var(--sidebar-offset, 260px)', 
         right: 0, 
         height: '48px', 
-        backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+        backgroundColor: 'var(--glass-surface)', 
         backdropFilter: 'blur(8px)',
         zIndex: 90, 
         display: 'flex', 
