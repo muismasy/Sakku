@@ -31,16 +31,11 @@ interface SidebarProps {
   onCreateLedger: () => void;
   onViewChange: (view: 'dashboard' | 'transactions' | 'savings' | 'budget' | 'adhd' | 'subscriptions' | 'settings' | 'goals' | 'recurring' | 'wallets' | 'investment' | 'reports' | 'categories' | 'backup') => void;
   activeView: string;
-  onHide: () => void;
-  userName: string;
-  onSignOut: () => void;
-}
-
 export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedger, onViewChange, activeView, onHide, userName, onSignOut }: SidebarProps) {
+  const [isWorkspaceOpen, setIsWorkspaceOpen] = React.useState(true);
 
   const handleNavClick = (view: SidebarProps['onViewChange'] extends (v: infer V) => void ? V : never) => {
     onViewChange(view);
-    // Auto-close sidebar on mobile after navigation
     if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       onHide();
     }
@@ -54,160 +49,155 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
       <div
         className="sidebar-backdrop"
         onClick={onHide}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.2)',
+          zIndex: 1000,
+          display: 'none' // Controlled by CSS media queries or external state
+        }}
       />
 
       <aside className="sidebar-panel" style={{
         width: '260px',
-        height: 'calc(100vh - 32px)',
-        backgroundColor: 'var(--glass-surface)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid var(--border-color)',
-        borderRadius: '16px',
-        padding: '1.5rem 1rem',
+        height: '100vh',
+        backgroundColor: 'var(--surface-color)',
+        borderRight: '1px solid var(--border-color)',
+        padding: '0',
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.5rem',
         position: 'fixed',
-        left: '16px',
-        top: '16px',
+        left: 0,
+        top: 0,
         zIndex: 1001,
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-        transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
-        overflowY: 'auto'
+        transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        overflowY: 'hidden'
       }}>
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          {/* Header with Profile + Close */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', padding: '0 0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '18px', backgroundColor: 'var(--primary-color)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
-                {userInitials || 'U'}
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-main)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Pro Account</span>
-              </div>
+        <style jsx>{`
+          @media (max-width: 768px) {
+            .sidebar-panel {
+              box-shadow: 20px 0 50px rgba(0,0,0,0.1);
+            }
+          }
+        `}</style>
+
+        {/* User Profile Header */}
+        <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ 
+              width: '32px', 
+              height: '32px', 
+              borderRadius: '8px', 
+              backgroundColor: 'var(--primary-color)', 
+              color: 'white', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              fontWeight: 800, 
+              fontSize: '13px',
+              boxShadow: '0 2px 8px rgba(79, 70, 229, 0.25)'
+            }}>
+              {userInitials || 'U'}
             </div>
-            {/* Close / Hide Button */}
-            <button
-              onClick={onHide}
-              aria-label="Hide sidebar"
-              style={{
-                padding: '6px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--text-muted)',
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontWeight: 700, fontSize: '0.8125rem', color: 'var(--text-main)', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</span>
+              <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', fontWeight: 600 }}>Personal Plan</span>
+            </div>
+          </div>
+          <button onClick={onHide} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-muted)' }}>
+            {Icons.XIcon}
+          </button>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 12px' }}>
+          {/* Workspaces Collapsible */}
+          <div style={{ marginBottom: '24px' }}>
+            <button 
+              onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
+              style={{ 
+                width: '100%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between',
+                padding: '8px 4px',
                 border: 'none',
                 background: 'none',
-                transition: 'background-color 0.2s ease, color 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--surface-secondary)';
-                e.currentTarget.style.color = 'var(--text-main)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = 'var(--text-muted)';
-              }}
-            >
-              {Icons.XIcon}
-            </button>
-          </div>
-
-          {/* Quick Add Button */}
-          <div style={{ padding: '0 0.5rem', marginBottom: '1.5rem' }}>
-            <button 
-              onClick={() => {
-                const addBtn = document.querySelector('[aria-label="Add transaction"]') as HTMLButtonElement;
-                if (addBtn) addBtn.click();
-                if (typeof window !== 'undefined' && window.innerWidth <= 768) onHide();
-              }}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '12px',
-                backgroundColor: 'var(--primary-color)',
-                color: 'white',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '0.875rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)',
-                transition: 'transform 0.2s'
+                color: 'var(--text-muted)',
+                fontSize: '0.6875rem',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
             >
-              + Quick Add
+              <span>Workspaces</span>
+              <span style={{ transform: isWorkspaceOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }}>▼</span>
             </button>
+            
+            {isWorkspaceOpen && (
+              <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                {ledgers.map(ledger => (
+                  <SidebarButton 
+                    key={ledger.id}
+                    active={activeLedgerId === ledger.id}
+                    icon={Icons.Book}
+                    label={ledger.name}
+                    onClick={() => onSelectLedger(ledger.id)}
+                  />
+                ))}
+                <button onClick={onCreateLedger} style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--primary-color)', fontSize: '0.75rem', fontWeight: 600, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '1rem' }}>+</span> New Ledger
+                </button>
+              </div>
+            )}
           </div>
 
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
-            <SectionLabel label="Workspaces" />
-            {ledgers.map(ledger => (
-              <SidebarButton 
-                key={ledger.id}
-                active={activeLedgerId === ledger.id}
-                icon={Icons.Book}
-                label={ledger.id === 'ledger_123' ? 'Family Budget' : ledger.name}
-                onClick={() => { onSelectLedger(ledger.id); if (typeof window !== 'undefined' && window.innerWidth <= 768) onHide(); }}
-              />
-            ))}
-            <button onClick={onCreateLedger} style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: 'var(--text-muted)', fontSize: '0.8125rem', marginLeft: '28px', border: 'none', background: 'none', cursor: 'pointer' }}>+ New Workspace</button>
-
-            <SectionLabel label="Primary" />
-            <SidebarButton active={activeView === 'dashboard'} icon={Icons.Home} label="Home" onClick={() => handleNavClick('dashboard')} />
-            <SidebarButton active={activeView === 'transactions'} icon={Icons.List} label="Transactions" onClick={() => handleNavClick('transactions')} />
-            <SidebarButton active={activeView === 'savings'} icon={Icons.Target} label="Savings & Growth" onClick={() => handleNavClick('savings')} />
-            <SidebarButton active={activeView === 'budget'} icon={Icons.PieChart} label="Budget" onClick={() => handleNavClick('budget')} />
-
-            <SectionLabel label="Databases" />
-            <SidebarButton active={activeView === 'investment'} icon={Icons.TrendingUp} label="Investment" onClick={() => handleNavClick('investment')} />
-            <SidebarButton active={activeView === 'categories'} icon={Icons.Tag} label="Categories" onClick={() => handleNavClick('categories')} />
-            <SidebarButton active={activeView === 'reports'} icon={Icons.FileText} label="Reports" onClick={() => handleNavClick('reports')} />
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <SectionLabel label="Menu" />
+            <SidebarButton active={activeView === 'dashboard'} icon={Icons.Home} label="Dashboard" onClick={() => handleNavClick('dashboard')} />
+            <SidebarButton active={activeView === 'transactions'} icon={Icons.List} label="History" onClick={() => handleNavClick('transactions')} />
+            <SidebarButton active={activeView === 'adhd'} icon={Icons.Calendar} label="ADHD Calendar" onClick={() => handleNavClick('adhd')} />
+            
+            <SectionLabel label="Planning" />
+            <SidebarButton active={activeView === 'budget'} icon={Icons.PieChart} label="Budgeting" onClick={() => handleNavClick('budget')} />
+            <SidebarButton active={activeView === 'recurring'} icon={Icons.Refresh} label="Subscriptions" onClick={() => handleNavClick('recurring')} />
+            <SidebarButton active={activeView === 'savings'} icon={Icons.Target} label="Savings Goals" onClick={() => handleNavClick('savings')} />
 
             <SectionLabel label="Tools" />
-            <SidebarButton active={activeView === 'wallets'} icon={Icons.Wallet} label="Wallets" onClick={() => handleNavClick('wallets')} />
-            <SidebarButton active={activeView === 'recurring'} icon={Icons.Refresh} label="Recurring Manager" onClick={() => handleNavClick('recurring')} />
-            <SidebarButton active={activeView === 'adhd'} icon={Icons.Calendar} label="Calendar" onClick={() => handleNavClick('adhd')} />
-            
-            <SectionLabel label="System" />
-            <SidebarButton active={activeView === 'settings'} icon={Icons.Settings} label="Settings" onClick={() => handleNavClick('settings')} />
-            
-            <div style={{ marginTop: 'auto', paddingTop: '1.5rem' }}>
-              <button 
-                onClick={onSignOut}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '0.625rem 0.75rem',
-                  borderRadius: '8px',
-                  color: 'var(--danger-color)',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  border: 'none',
-                  background: 'none',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.05)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                Sign Out
-              </button>
-            </div>
+            <SidebarButton active={activeView === 'investment'} icon={Icons.TrendingUp} label="Investment" onClick={() => handleNavClick('investment')} />
+            <SidebarButton active={activeView === 'wallets'} icon={Icons.Wallet} label="My Wallets" onClick={() => handleNavClick('wallets')} />
+            <SidebarButton active={activeView === 'categories'} icon={Icons.Tag} label="Categories" onClick={() => handleNavClick('categories')} />
           </nav>
+        </div>
+
+        {/* Footer Actions */}
+        <div style={{ padding: '16px 12px', borderTop: '1px solid var(--border-color)' }}>
+          <SidebarButton active={activeView === 'settings'} icon={Icons.Settings} label="Settings" onClick={() => handleNavClick('settings')} />
+          <button 
+            onClick={onSignOut}
+            style={{
+              width: '100%',
+              textAlign: 'left',
+              padding: '10px 12px',
+              borderRadius: '8px',
+              color: 'var(--danger-color)',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              marginTop: '4px'
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </button>
         </div>
       </aside>
     </>

@@ -19,6 +19,7 @@ import { GoalDetail } from '@/components/goals/GoalDetail';
 import { TransactionDetail } from '@/components/transactions/TransactionDetail';
 import { InvestmentDetail } from '@/components/investment/InvestmentDetail';
 import { InvestmentTracker } from '@/components/ui/InvestmentTracker';
+import { CategoriesView } from '@/components/categories/CategoriesView';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
@@ -103,30 +104,39 @@ export default function DashboardPage() {
       <header style={{ 
         position: 'fixed', 
         top: 0, 
-        left: 0, 
+        left: isSidebarVisible ? '260px' : 0, 
         right: 0, 
-        height: '45px', 
-        backgroundColor: 'var(--bg-color)', 
+        height: '48px', 
+        backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+        backdropFilter: 'blur(8px)',
         zIndex: 90, 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between',
-        padding: '0 1rem 0 1rem',
+        padding: '0 1.5rem',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         borderBottom: '1px solid var(--border-color)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <button 
-            onClick={() => setIsSidebarVisible(!isSidebarVisible)}
-            aria-label={isSidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
-            style={{ padding: '4px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: 0.6, transition: 'opacity 0.2s' }}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
-          >
-            <span style={{ fontSize: '1.25rem', fontWeight: 600, lineHeight: 1 }}>{isSidebarVisible ? '‹' : '›'}</span>
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-            <span>Workspace</span> / <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{activeView.charAt(0).toUpperCase() + activeView.slice(1)}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {!isSidebarVisible && (
+            <button 
+              onClick={() => setIsSidebarVisible(true)}
+              style={{ 
+                padding: '6px', 
+                borderRadius: '6px', 
+                cursor: 'pointer', 
+                backgroundColor: 'var(--surface-secondary)',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                color: 'var(--text-main)'
+              }}
+            >
+              <span style={{ fontSize: '1rem' }}>☰</span>
+            </button>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+            <span style={{ fontWeight: 600 }}>Sakku</span> / <span style={{ color: 'var(--text-main)', fontWeight: 700 }}>{activeView.charAt(0).toUpperCase() + activeView.slice(1)}</span>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -136,16 +146,15 @@ export default function DashboardPage() {
             gap: '6px', 
             fontSize: '0.75rem', 
             color: typeof window !== 'undefined' && !navigator.onLine ? 'var(--danger-color)' : 'var(--success-color)',
-            fontWeight: 600
+            fontWeight: 700
           }}>
             <span style={{ 
-              width: '8px', 
-              height: '8px', 
+              width: '6px', 
+              height: '6px', 
               borderRadius: '50%', 
-              backgroundColor: 'currentColor',
-              boxShadow: '0 0 8px currentColor'
+              backgroundColor: 'currentColor'
             }}></span> 
-            {typeof window !== 'undefined' && !navigator.onLine ? 'Offline Mode' : 'Synced'}
+            {typeof window !== 'undefined' && !navigator.onLine ? 'Offline' : 'Online'}
           </div>
         </div>
       </header>
@@ -222,11 +231,7 @@ export default function DashboardPage() {
               <p>Detailed financial reports and exports will be available here.</p>
             </div>
           ) : activeView === 'categories' ? (
-            <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🏷️</div>
-              <h2 style={{ color: 'var(--text-main)', marginBottom: '8px' }}>Category Manager</h2>
-              <p>Custom categories and rules will be available here.</p>
-            </div>
+            <CategoriesView />
           ) : activeView === 'adhd' ? (
             <ADHDCalendar />
           ) : activeView === 'subscriptions' ? (
