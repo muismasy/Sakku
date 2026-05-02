@@ -31,6 +31,11 @@ interface SidebarProps {
   onCreateLedger: () => void;
   onViewChange: (view: 'dashboard' | 'transactions' | 'savings' | 'budget' | 'adhd' | 'subscriptions' | 'settings' | 'goals' | 'recurring' | 'wallets' | 'investment' | 'reports' | 'categories' | 'backup') => void;
   activeView: string;
+  onHide: () => void;
+  userName: string;
+  onSignOut: () => void;
+}
+
 export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedger, onViewChange, activeView, onHide, userName, onSignOut }: SidebarProps) {
   const [isWorkspaceOpen, setIsWorkspaceOpen] = React.useState(true);
 
