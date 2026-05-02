@@ -101,6 +101,18 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
     return <DashboardSkeleton />;
   }
 
+  // Achievement Logic
+  const achievements = [
+    { id: 'savings_master', label: 'Savings Master', icon: '💎', color: '#8b5cf6', desc: 'Saved >20% of income', active: true },
+    { id: 'money_machine', label: 'Money Machine', icon: '🚀', color: '#10b981', desc: 'Income 2x of expenses', active: true },
+    { id: 'ontime', label: 'Si Paling Ontime', icon: '⏱️', color: '#3b82f6', desc: 'Paid bills within H+1', active: true },
+    { id: 'pejuang_rupiah', label: 'Pejuang Rupiah', icon: '🛡️', color: '#f59e0b', desc: 'Strict budget survivor', active: false }
+  ].filter(b => b.active);
+
+  const totalBalance = transactions.reduce((sum, t) => 
+    t.type === 'income' ? sum + t.amount : sum - t.amount, 0
+  );
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-section)' }}>
 
@@ -108,7 +120,7 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
       <section style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <p style={{ fontSize: 'var(--font-small)', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 4px' }} suppressHydrationWarning>
-            {greeting}, John 👋
+            {greeting}, {user?.user_metadata?.full_name || 'User'} 👋
           </p>
           <h1 style={{ fontSize: '2.25rem', fontWeight: 800, margin: 0, color: 'var(--text-main)', letterSpacing: '-0.04em' }}>
             {ledgerName}
@@ -123,7 +135,9 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
             borderRadius: '10px',
             fontSize: '0.875rem',
             fontWeight: 700,
-            boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)'
+            boxShadow: '0 4px 12px rgba(79, 70, 229, 0.2)',
+            border: 'none',
+            cursor: 'pointer'
           }}
         >
           Quick Add
@@ -148,12 +162,44 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
             <div>
               <p style={{ fontSize: '0.875rem', opacity: 0.7, margin: '0 0 8px', fontWeight: 600, letterSpacing: '0.02em' }}>Available Balance</p>
               <h2 style={{ fontSize: '2.75rem', fontWeight: 800, margin: 0, letterSpacing: '-0.03em' }}>
-                Rp {balance.toLocaleString('id-ID')}
+                Rp {totalBalance.toLocaleString('id-ID')}
               </h2>
             </div>
             <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', padding: '8px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700 }}>
               Primary Wallet
             </div>
+          </div>
+
+          {/* Achievement Ribbons */}
+          <div style={{ 
+            display: 'flex', 
+            gap: '8px', 
+            marginTop: '20px',
+            flexWrap: 'wrap'
+          }}>
+            {achievements.map(badge => (
+              <div 
+                key={badge.id}
+                title={badge.desc}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  backdropFilter: 'blur(4px)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'white',
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  cursor: 'help'
+                }}
+              >
+                <span>{badge.icon}</span>
+                {badge.label}
+              </div>
+            ))}
           </div>
 
           <div style={{ display: 'flex', gap: '48px', marginTop: '32px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
