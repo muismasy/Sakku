@@ -32,18 +32,20 @@ const DEMO_DATA: Transaction[] = [
 ];
 
 export function useLedgerData(ledgerId: string = '00000000-0000-0000-0000-000000000123') {
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>(DEMO_DATA);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // In Demo Mode, we still try to fetch but fall back to DEMO_DATA
+    if (!user) return;
+
     const fetchTransactions = async () => {
       try {
         const { data, error } = await supabase
           .from('transactions')
           .select('*')
-          .eq('ledger_id', ledgerId)
+          .eq('user_id', user.id) // Dynamic filtering by logged-in user
           .order('date', { ascending: false });
 
         if (!error && data && data.length > 0) {
@@ -55,7 +57,7 @@ export function useLedgerData(ledgerId: string = '00000000-0000-0000-0000-000000
     };
 
     fetchTransactions();
-  }, [ledgerId]);
+  }, [ledgerId, user]);
 
   return { transactions, loading, error, ledgerId };
 }

@@ -20,8 +20,14 @@ import { TransactionDetail } from '@/components/transactions/TransactionDetail';
 import { InvestmentDetail } from '@/components/investment/InvestmentDetail';
 import { InvestmentTracker } from '@/components/ui/InvestmentTracker';
 
+import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+
 export default function DashboardPage() {
   const [mounted, setMounted] = React.useState(false);
+  const { user, loading: authLoading, signOut } = useAuth();
+  const router = useRouter();
+
   const [activeLedgerId, setActiveLedgerId] = useState('00000000-0000-0000-0000-000000000123');
   const [activeView, setActiveView] = useState<'dashboard' | 'transactions' | 'savings' | 'budget' | 'adhd' | 'subscriptions' | 'settings' | 'goals' | 'recurring' | 'wallets' | 'investment' | 'reports' | 'categories' | 'backup'>('dashboard');
   const [detailView, setDetailView] = useState<{ type: 'goal' | 'transaction' | 'investment', id: string } | null>(null);
@@ -32,12 +38,20 @@ export default function DashboardPage() {
     { id: 'ledger_personal', name: 'Personal Cash' },
     { id: 'ledger_business', name: 'Startup Business' }
   ]);
-  const [userName, setUserName] = useState('John Doe');
-  const [userEmail, setUserEmail] = useState('john.doe@example.com');
+  
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+  const userEmail = user?.email || '';
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Auth protection
+  React.useEffect(() => {
+    if (mounted && !authLoading && !user) {
+      router.push('/login');
+    }
+  }, [mounted, authLoading, user, router]);
 
   const handleCreateLedger = () => {
     const name = prompt('Enter Ledger Name:');
@@ -53,9 +67,35 @@ export default function DashboardPage() {
     setDetailView(null);
   };
 
-  if (!mounted) {
-    return <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Loading Sakku...</div>;
+  if (!mounted || authLoading) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        backgroundColor: 'var(--bg-color)', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        color: 'var(--text-muted)',
+        gap: '20px'
+      }}>
+        <div style={{ 
+          width: '40px', 
+          height: '40px', 
+          border: '3px solid var(--border-color)', 
+          borderTopColor: 'var(--primary-color)', 
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <p style={{ fontWeight: 600, letterSpacing: '0.02em' }}>Syncing Sakku...</p>
+        <style jsx>{`
+          @keyframes spin { to { transform: rotate(360deg); } }
+        `}</style>
+      </div>
+    );
   }
+
+  if (!user) return null; // Prevent flicker before redirect
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh', backgroundColor: 'var(--bg-color)' }}>
@@ -120,6 +160,7 @@ export default function DashboardPage() {
           activeView={activeView}
           onHide={() => setIsSidebarVisible(false)}
           userName={userName}
+          onSignOut={signOut}
         />
       )}
 

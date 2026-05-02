@@ -33,9 +33,10 @@ interface SidebarProps {
   activeView: string;
   onHide: () => void;
   userName: string;
+  onSignOut: () => void;
 }
 
-export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedger, onViewChange, activeView, onHide, userName }: SidebarProps) {
+export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedger, onViewChange, activeView, onHide, userName, onSignOut }: SidebarProps) {
 
   const handleNavClick = (view: SidebarProps['onViewChange'] extends (v: infer V) => void ? V : never) => {
     onViewChange(view);
@@ -44,6 +45,8 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
       onHide();
     }
   };
+
+  const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <>
@@ -73,13 +76,15 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
         transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
         overflowY: 'auto'
       }}>
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* Header with Profile + Close */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', padding: '0 0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '18px', backgroundColor: 'var(--primary-color)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>JD</div>
+              <div style={{ width: '36px', height: '36px', borderRadius: '18px', backgroundColor: 'var(--primary-color)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>
+                {userInitials || 'U'}
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-main)' }}>{userName}</span>
+                <span style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-main)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</span>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Pro Account</span>
               </div>
             </div>
@@ -144,7 +149,7 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
             </button>
           </div>
 
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
             <SectionLabel label="Workspaces" />
             {ledgers.map(ledger => (
               <SidebarButton 
@@ -155,7 +160,7 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
                 onClick={() => { onSelectLedger(ledger.id); if (typeof window !== 'undefined' && window.innerWidth <= 768) onHide(); }}
               />
             ))}
-            <button onClick={onCreateLedger} style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: 'var(--text-muted)', fontSize: '0.8125rem', marginLeft: '28px' }}>+ New Workspace</button>
+            <button onClick={onCreateLedger} style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: 'var(--text-muted)', fontSize: '0.8125rem', marginLeft: '28px', border: 'none', background: 'none', cursor: 'pointer' }}>+ New Workspace</button>
 
             <SectionLabel label="Primary" />
             <SidebarButton active={activeView === 'dashboard'} icon={Icons.Home} label="Home" onClick={() => handleNavClick('dashboard')} />
@@ -175,6 +180,33 @@ export function Sidebar({ activeLedgerId, onSelectLedger, ledgers, onCreateLedge
             
             <SectionLabel label="System" />
             <SidebarButton active={activeView === 'settings'} icon={Icons.Settings} label="Settings" onClick={() => handleNavClick('settings')} />
+            
+            <div style={{ marginTop: 'auto', paddingTop: '1.5rem' }}>
+              <button 
+                onClick={onSignOut}
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '0.625rem 0.75rem',
+                  borderRadius: '8px',
+                  color: 'var(--danger-color)',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.05)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sign Out
+              </button>
+            </div>
           </nav>
         </div>
       </aside>

@@ -9,16 +9,24 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // 1. Check current session immediately
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
       setLoading(false);
-    });
+    };
 
-    // 2. Listen for auth changes
+    checkSession();
+
+    // 2. Listen for auth changes (Login, Logout, Token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Auto-refresh token in background
+      if (_event === 'SIGNED_IN') {
+        console.log("User signed in, session persisted.");
+      }
     });
 
     return () => {
@@ -26,14 +34,20 @@ export function useAuth() {
     };
   }, []);
 
-  const signIn = async () => {
-    // For demo/prototype, we use OAuth or simple email
-    // For now, let's just trigger a dummy sign in or redirect
+  const signInWithEmail = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+  };
+
+  const signUpWithEmail = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+  };
+
+  const signInWithGithub = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
-      options: {
-        redirectTo: window.location.origin + '/dashboard'
-      }
+      options: { redirectTo: window.location.origin + '/dashboard' }
     });
     if (error) console.error("Login error:", error.message);
   };
@@ -42,5 +56,5 @@ export function useAuth() {
     await supabase.auth.signOut();
   };
 
-  return { user, loading, signIn, signOut };
+  return { user, loading, signInWithEmail, signUpWithEmail, signInWithGithub, signOut };
 }
