@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Transaction } from '@/types';
+import { useAuth } from './useAuth';
 import { supabase } from '@/lib/supabase';
 
 // Map snake_case DB row to camelCase Transaction type
