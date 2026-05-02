@@ -42,8 +42,15 @@ export default function DashboardPage() {
     { id: 'ledger_business', name: 'Startup Business' }
   ]);
   
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
-  const userEmail = user?.email || '';
+  const [userName, setUserName] = useState('User');
+  const [userEmail, setUserEmail] = useState('');
+
+  React.useEffect(() => {
+    if (user) {
+      setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || 'User');
+      setUserEmail(user.email || '');
+    }
+  }, [user]);
 
   React.useEffect(() => {
     setMounted(true);
