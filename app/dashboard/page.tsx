@@ -20,6 +20,7 @@ import { TransactionDetail } from '@/components/transactions/TransactionDetail';
 import { InvestmentDetail } from '@/components/investment/InvestmentDetail';
 import { InvestmentTracker } from '@/components/ui/InvestmentTracker';
 import { CategoriesView } from '@/components/categories/CategoriesView';
+import { ReportsView } from '@/components/reports/ReportsView';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
@@ -225,11 +226,7 @@ export default function DashboardPage() {
           ) : activeView === 'investment' ? (
             <InvestmentTracker />
           ) : activeView === 'reports' ? (
-            <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📋</div>
-              <h2 style={{ color: 'var(--text-main)', marginBottom: '8px' }}>Reports & Analytics</h2>
-              <p>Detailed financial reports and exports will be available here.</p>
-            </div>
+            <ReportsView />
           ) : activeView === 'categories' ? (
             <CategoriesView />
           ) : activeView === 'adhd' ? (
