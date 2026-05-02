@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import { RecurringExpenseCard } from './RecurringExpenseCard';
 import { RecurringExpense } from '@/types';
 import { Card, Tabs, BottomSheet } from '@/components/ui';
