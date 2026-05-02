@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import { useLedgerData } from '@/hooks/useLedgerData';
 import { useAuth } from '@/hooks/useAuth';
+import { getUserTitle } from '@/lib/gamification';
 import { ProgressBar, Card, ListItem, Skeleton } from '@/components/ui';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Filler } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
@@ -103,17 +104,19 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
     return <DashboardSkeleton />;
   }
 
-  // Achievement Logic
-  const achievements = [
-    { id: 'savings_master', label: 'Savings Master', icon: '💎', color: '#8b5cf6', desc: 'Saved >20% of income', active: true },
-    { id: 'money_machine', label: 'Money Machine', icon: '🚀', color: '#10b981', desc: 'Income 2x of expenses', active: true },
-    { id: 'ontime', label: 'Si Paling Ontime', icon: '⏱️', color: '#3b82f6', desc: 'Paid bills within H+1', active: true },
-    { id: 'pejuang_rupiah', label: 'Pejuang Rupiah', icon: '🛡️', color: '#f59e0b', desc: 'Strict budget survivor', active: false }
-  ].filter(b => b.active);
-
   const totalBalance = transactions.reduce((sum, t) => 
     t.type === 'income' ? sum + t.amount : sum - t.amount, 0
   );
+
+  // Auto-detect User Title based on real data
+  const userTitle = getUserTitle({
+    transactions: transactions as any,
+    totalSaving: totalBalance, // Using current balance as proxy for savings for now
+    totalIncome: totalIncome, // Already computed above via useMemo
+    investmentNow: 0, // Will be wired up when investment module is fully ready
+    investmentPrev: 0,
+    budgetLimit: 4000000 // Default budget baseline
+  });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-section)' }}>
@@ -183,63 +186,33 @@ export function HomeDashboard({ ledgerName, onAddTransaction, onSelectTransactio
                 Rp {totalBalance.toLocaleString('id-ID')}
               </h2>
             </div>
-            <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', padding: '8px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700 }}>
-              Primary Wallet
+            <div 
+              style={{ 
+                display: 'flex', alignItems: 'center', gap: '8px',
+                backgroundColor: 'rgba(0,0,0,0.2)', 
+                padding: '6px 14px', 
+                borderRadius: '20px', 
+                border: `1px solid ${userTitle.color}50`,
+                boxShadow: `0 4px 15px rgba(0,0,0,0.2), inset 0 0 15px ${userTitle.color}15`,
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
+                e.currentTarget.style.boxShadow = `0 8px 25px ${userTitle.color}40, inset 0 0 20px ${userTitle.color}30`;
+                e.currentTarget.style.borderColor = userTitle.color;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                e.currentTarget.style.boxShadow = `0 4px 15px rgba(0,0,0,0.2), inset 0 0 15px ${userTitle.color}15`;
+                e.currentTarget.style.borderColor = `${userTitle.color}50`;
+              }}
+            >
+              <span style={{ fontSize: '1.25rem', filter: `drop-shadow(0 0 6px ${userTitle.color}80)` }}>{userTitle.icon}</span>
+              <span style={{ fontSize: '0.875rem', fontWeight: 800, color: 'white', letterSpacing: '0.02em', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>{userTitle.label}</span>
             </div>
           </div>
-
-          {/* Gamified Achievement Ribbons */}
-          {achievements.length > 0 && (
-            <div style={{ marginTop: '24px', position: 'relative' }}>
-              <div style={{ fontSize: '0.625rem', fontWeight: 800, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span>🏆</span> Hall of Fame
-              </div>
-              <div className="badges-container" style={{ 
-                display: 'flex', 
-                gap: '12px', 
-                flexWrap: 'wrap'
-              }}>
-                {achievements.map(badge => (
-                  <div 
-                    key={badge.id}
-                    title={badge.desc}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      padding: '8px 16px',
-                      borderRadius: '12px',
-                      backgroundColor: 'rgba(0,0,0,0.25)',
-                      backdropFilter: 'blur(10px)',
-                      border: `1px solid ${badge.color}50`,
-                      boxShadow: `0 4px 15px rgba(0,0,0,0.2), inset 0 0 15px ${badge.color}15`,
-                      color: 'white',
-                      cursor: 'help',
-                      position: 'relative',
-                      overflow: 'hidden',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-3px)';
-                      e.currentTarget.style.boxShadow = `0 8px 25px ${badge.color}40, inset 0 0 20px ${badge.color}30`;
-                      e.currentTarget.style.borderColor = badge.color;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = `0 4px 15px rgba(0,0,0,0.2), inset 0 0 15px ${badge.color}15`;
-                      e.currentTarget.style.borderColor = `${badge.color}50`;
-                    }}
-                  >
-                    <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', backgroundColor: badge.color }} />
-                    <span style={{ fontSize: '1.25rem', filter: `drop-shadow(0 0 6px ${badge.color}80)` }}>{badge.icon}</span>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ fontSize: '0.8125rem', fontWeight: 800, letterSpacing: '0.02em', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>{badge.label}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           <div style={{ display: 'flex', gap: '48px', marginTop: '32px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
             <div>

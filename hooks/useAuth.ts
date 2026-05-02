@@ -44,9 +44,9 @@ export function useAuth() {
     if (error) throw error;
   };
 
-  const signInWithGithub = async () => {
+  const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
+      provider: 'google',
       options: { redirectTo: window.location.origin + '/dashboard' }
     });
     if (error) console.error("Login error:", error.message);
@@ -56,5 +56,5 @@ export function useAuth() {
     await supabase.auth.signOut();
   };
 
-  return { user, loading, signInWithEmail, signUpWithEmail, signInWithGithub, signOut };
+  return { user, loading, signInWithEmail, signUpWithEmail, signInWithGoogle, signOut };
 }
