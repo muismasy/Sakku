@@ -35,20 +35,23 @@ export default function DashboardPage() {
   const [activeView, setActiveView] = useState<'dashboard' | 'transactions' | 'savings' | 'budget' | 'adhd' | 'subscriptions' | 'settings' | 'goals' | 'recurring' | 'wallets' | 'investment' | 'reports' | 'categories' | 'backup'>('dashboard');
   const [detailView, setDetailView] = useState<{ type: 'goal' | 'transaction' | 'investment', id: string } | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false); // Default hidden for mobile
   const [ledgers, setLedgers] = useState([
     { id: '00000000-0000-0000-0000-000000000123', name: 'Family Budget' },
     { id: 'ledger_personal', name: 'Personal Cash' },
     { id: 'ledger_business', name: 'Startup Business' }
   ]);
   
-  const [userName, setUserName] = useState('User');
+  const [userName, setUserName] = useState('Guest');
   const [userEmail, setUserEmail] = useState('');
 
   React.useEffect(() => {
     if (user) {
       setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || 'User');
       setUserEmail(user.email || '');
+    } else {
+      setUserName('Guest');
+      setUserEmail('guest@sakku.app');
     }
   }, [user]);
 
@@ -56,12 +59,7 @@ export default function DashboardPage() {
     setMounted(true);
   }, []);
 
-  // Auth protection
-  React.useEffect(() => {
-    if (mounted && !authLoading && !user) {
-      router.push('/login');
-    }
-  }, [mounted, authLoading, user, router]);
+  // Removed Auth protection redirect to allow Guest Mode
 
   const handleCreateLedger = () => {
     const name = prompt('Enter Ledger Name:');
